@@ -45,26 +45,13 @@ app.get('/', function(req, res) {
 	res.sendFile(path.join(__dirname + '/static' + '/login.html'));
 });
 
-
-app.get('/home', function(request, response) {
-	// If the user is loggedin
-	if (request.session.loggedin) {
-		// Output username
-		response.send('Welcome back, ' + request.session.username + '!');
-	} else {
-		// Not logged in
-		response.send('Please login to view this page!');
-	}
-	response.end();
-});
-
-app.get('/', function(request, response) {
+app.get('/', function(request, res) {
 	// Render login template
-	response.sendFile(path.join(__dirname + '/static' + '/login.html'));
+	res.sendFile(path.join(__dirname + '/static' + '/login.html'));
 });
 
 app.get('/register', function(req, res) {
-  res.render('register', {config: reloadConfig()})
+  res.status(200).render('register', {config: reloadConfig()})
 });
 
 
@@ -72,8 +59,7 @@ app.get('/register', function(req, res) {
 //register account
 app.post('/api/register', (req, res) => {
   if (config['settings']['registrations'] != 'on') { //Check if registrations are disabled. Return error if they are. 
-    res.send(errors['registrationsDisabled']);
-    res.end();
+    res.json(errors['registrationsDisabled']);
   }
 	let username = req.body.username;
 	let password = req.body.password;
@@ -84,12 +70,12 @@ app.post('/api/register', (req, res) => {
 			if (err) throw err;
 			if (rows.length > 0) { //Account already exists.  
         if (rows[0].username == username) { //Account with same username exists
-          response.send(errors['usernameExists']);
-          response.end();
+          res.status(406).json(errors['usernameExists']);
+          return;
         }
         if (rows[0].email == email) { //Account with email exists
-          response.send(errors['emailExists']);
-          response.end();
+          res.status(406).json(errors['emailExists']);
+          return;
         }
 			}
       let inv = null; //Initialize invite
@@ -99,12 +85,10 @@ app.post('/api/register', (req, res) => {
         connection.query('SELECT * FROM invites WHERE invite = ?', [invite], (err, rows) => {
           if (err) throw err
           if (rows.length == 0) { //Invite doesn't exist
-            response.send(errors['invalidInvite']);
-            response.end();
+            res.status(406).json(errors['invalidInvite']);
           }
           if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
-            response.send(errors['invalidInvite']);
-            response.end();
+            res.status(406).json(errors['invalidInvite']);
           }
           inv = invite; //If all the checks pass, the invite can be used
           invBy = rows[0].creator; //Sets invited by to ID of invite creator
@@ -112,17 +96,17 @@ app.post('/api/register', (req, res) => {
       }
       password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password+salt
       let token = crypto.createHash('sha256').update(username+password+config['server']['salt']).digest('base64'); //User Token
-      console.log(inv);
-      connection.query(`INSERT INTO accounts (id, username, email, password, token, group, invite, invitedBy, joinDate) VALUES (NULL, ${username}, ${email}, ${password}, ${token}, 2, ${inv}, ${invBy}, ${Date.now})`, (err, rows) => {
+      if(inv != null) { //Allows the SQL query to insert NULL properly. 
+        inv = `'${inv}'`
+      }
+      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', 2, ${inv}, ${invBy}, ${Date.now()})`, (err, rows) => {
         if (err) throw err
       })
-			res.end();
+      res.status(201).json({success:"Account successfully created"})
 		}); 
   } else {
-    response.send(errors['unfilledFields']);
-    response.end();
+    res.status(417).json(errors['unfilledFields']);
   }
-
 })
 //log in
 app.post('/api/auth', function(req, res) {
@@ -139,13 +123,11 @@ app.post('/api/auth', function(req, res) {
 				req.session.username = username;
 				res.redirect('/home');
 			} else {
-				res.send(errors['invalidLogin']);
+				res.json(errors['invalidLogin']);
 			}			
-			res.end();
 		});
     } else {
-        res.send(errors['loginInfoMissing']);
-        res.end();
+        res.json(errors['loginInfoMissing']);
     }
 });
 
