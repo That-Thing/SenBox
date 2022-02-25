@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "mysql": "^2.18.1",
+    "pug": "^3.0.2"
+  },
+  "name": "senbox",
+  "version": "0.0.1",
+  "description": "A fast and easy file hosting service",
+  "main": "app.js",
+  "scripts": {
+    "test": "\t"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/That-Thing/SenBox.git"
+  },
+  "keywords": [
+    "Filehost",
+    "file",
+    "host"
+  ],
+  "author": "Sen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/That-Thing/SenBox/issues"
+  },
+  "homepage": "https://github.com/That-Thing/SenBox#readme"
+}

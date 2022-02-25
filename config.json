@@ -1,0 +1,19 @@
+{
+    "server": {
+        "port": 3000,
+        "salt": "password",
+        "errors": "errors_en.json"
+    },
+    "database": {
+        "host":"localhost",
+        "user":"senbox",
+        "password":"senbox",
+        "name":"senbox"
+    },
+    "settings": {
+        "name": "SenBox",
+        "registrations": "on",
+        "invites": "off",
+        "banned-extensions": "zip,exe"
+    }
+}

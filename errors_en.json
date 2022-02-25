@@ -1,0 +1,9 @@
+{
+    "loginInfoMissing": "Username or password missing",
+    "invalidLogin": "Sign in failed: Incorrect username or password",
+    "registrationsDisabled": "Sign up failed: Registrations are currently disabled",
+    "unfilledFields": "Sign up failed: Please fill out all required fields",
+    "usernameExists": "Sign up failed: Username taken",
+    "emailExists": "Sign up failed: Email already exists",
+    "invalidInvite": "Sign up failed: Please input a valid invite"
+}
