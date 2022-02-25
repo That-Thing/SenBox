@@ -41,19 +41,32 @@ const connection = mysql.createConnection({
   database: config['database']['name']
 })
 
-app.get('/', function(req, res) {
-	res.sendFile(path.join(__dirname + '/static' + '/login.html'));
-});
 
-app.get('/', function(request, res) {
-	// Render login template
-	res.sendFile(path.join(__dirname + '/static' + '/login.html'));
-});
 
+//Register page
 app.get('/register', function(req, res) {
-  res.status(200).render('register', {config: reloadConfig()})
+  if (req.session.loggedin == true) {
+    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+  } else {
+    res.status(200).render('register', {config: reloadConfig()})
+  }
 });
-
+//Login page
+app.get('/login', function(req, res) {
+  if (req.session.loggedin == true) {
+    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+  } else {
+    res.status(200).render('login', {config: reloadConfig()})
+  }
+});
+app.get('/home', function(req, res) {
+  if (req.session.loggedin == true) {
+    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+  } else {
+    res.status(200).render('login', {config: reloadConfig()})
+  }
+  
+});
 
 
 //register account
@@ -86,9 +99,11 @@ app.post('/api/register', (req, res) => {
           if (err) throw err
           if (rows.length == 0) { //Invite doesn't exist
             res.status(406).json(errors['invalidInvite']);
+            return;
           }
           if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
             res.status(406).json(errors['invalidInvite']);
+            return;
           }
           inv = invite; //If all the checks pass, the invite can be used
           invBy = rows[0].creator; //Sets invited by to ID of invite creator
@@ -102,10 +117,12 @@ app.post('/api/register', (req, res) => {
       connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', 2, ${inv}, ${invBy}, ${Date.now()})`, (err, rows) => {
         if (err) throw err
       })
-      res.status(201).json({success:"Account successfully created"})
+      res.status(201).json({success:"Account successfully created"});
+      return;
 		}); 
   } else {
     res.status(417).json(errors['unfilledFields']);
+    return;
   }
 })
 //log in
@@ -114,20 +131,19 @@ app.post('/api/auth', function(req, res) {
 	let password = req.body.password;
 	if (username && password) {
     password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
-    console.log(password)
 		connection.query('SELECT * FROM accounts WHERE username = ? OR email = ? AND password = ?', [username, username, password], function(err, rows) {
-      console.log(rows);
 			if (err) throw err;
 			if (rows.length > 0) {
 				req.session.loggedin = true;
 				req.session.username = username;
-				res.redirect('/home');
+        req.session.group = rows[0].group
+				res.status(200).redirect('/home');
 			} else {
-				res.json(errors['invalidLogin']);
+				res.status(406).json(errors['invalidLogin']);
 			}			
 		});
     } else {
-        res.json(errors['loginInfoMissing']);
+        res.status(417).json(errors['loginInfoMissing']);
     }
 });
 

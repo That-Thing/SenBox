@@ -1,0 +1,45 @@
+doctype html 
+html
+    head 
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width", initial-scale="1")
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3", crossorigin="anonymous")
+        link(href="styles/home.css" rel="stylesheet" type="text/css")
+        title #{config['settings']['name']}
+    body
+        nav(class="navbar navbar-expand-lg navbar-dark bg-dark px-2")
+            a(href="/home" class="navbar-brand") #{config['settings']['name']}  
+            ul(class="navbar-nav mr-auto")
+                li(class="nav-item")
+                    a(class="nav-link active" href="/home") Home 
+                li(class="nav-item")
+                    a(class="nav-link" href="/gallery") Gallery
+                li(class="nav-item")
+                    a(class="nav-link" href="/account") Account
+                li(class="nav-item")
+                    a(class="nav-link" href="/settings") Settings
+                li(class="nav-item ml-auto")
+                    a(class="nav-link" href="/logout") Sign out
+        div(class="container")
+            div(class="card bg-dark w-75 mx-auto mt-5")
+                h5(class="card-header") Welcome, 
+                    - var groupClass = "usergroup-" + session.group ;
+                    span(class=groupClass) #{session.username}
+                div(class="card-body")
+                    div(class="progress")
+                        div(class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 40%" aria-valuenow="2000" aria-valuemin="0" aria-valuemax="5000")
+                    p(class="text-center text-muted") Storage used 2000/5000mb
+                    p Total files on site: 99999
+                    p Invites: 
+                        a(href="/invites") 5
+            div(class="card bg-dark w-75 mx-auto mt-5")
+                h5(class="card-header") Latest Uploads 
+                div(class="container")
+                    div(class="uploaded-content m-3")
+                    img(src="https://cdn.sen.cat/cat/670.jpg" height="300")
+
+        footer(class="position-absolute w-100 bottom-0 bg-dark text-center text-lg-start")
+            div(class="text-center p-3")
+                .
+                    Copyright 2022 
+                a(href="/" class="text-bold text-decoration-none") #{config['settings']['name']}
