@@ -46,24 +46,25 @@ const connection = mysql.createConnection({
 //Register page
 app.get('/register', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+    res.status(200).render('home', {config: reloadConfig(), session:req.session, toast:["true","#6272a4","You are already signed in"]})
   } else {
-    res.status(200).render('register', {config: reloadConfig()})
+    res.status(200).render('register', {config: reloadConfig(), toast:['false']});
   }
 });
 //Login page
 app.get('/login', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+    res.status(200).render('home', {config: reloadConfig(), session:req.session, toast:["true","#6272a4","You are already signed in"]})
   } else {
-    res.status(200).render('login', {config: reloadConfig()})
+    res.status(200).render('login', {config: reloadConfig(), toast:["false"]});
   }
 });
 app.get('/home', function(req, res) {
+  console.log(req.session.group)
   if (req.session.loggedin == true) {
     res.status(200).render('home', {config: reloadConfig(), session:req.session})
   } else {
-    res.status(200).render('login', {config: reloadConfig()})
+    res.status(200).render('login', {config: reloadConfig(), toast:["true","#ff5555","Please sign in"]});
   }
   
 });
@@ -117,7 +118,7 @@ app.post('/api/register', (req, res) => {
       connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', 2, ${inv}, ${invBy}, ${Date.now()})`, (err, rows) => {
         if (err) throw err
       })
-      res.status(201).json({success:"Account successfully created"});
+      res.status(201).render('login', {config: reloadConfig(), toast:["true","#6272a4","Account created, please sign in"]});
       return;
 		}); 
   } else {
@@ -132,12 +133,14 @@ app.post('/api/auth', function(req, res) {
 	if (username && password) {
     password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
 		connection.query('SELECT * FROM accounts WHERE username = ? OR email = ? AND password = ?', [username, username, password], function(err, rows) {
+      console.log(rows[0])
 			if (err) throw err;
 			if (rows.length > 0) {
 				req.session.loggedin = true;
 				req.session.username = username;
-        req.session.group = rows[0].group
-				res.status(200).redirect('/home');
+        req.session.group = rows[0].group;
+        console.log(req.session.group);
+				res.status(200).render('home', {config: reloadConfig(), session:req.session, toast:["true","#6272a4","Successfully signed in"]});
 			} else {
 				res.status(406).json(errors['invalidLogin']);
 			}			
@@ -147,7 +150,11 @@ app.post('/api/auth', function(req, res) {
     }
 });
 
-
+//log out
+app.get('/logout', function(req, res) {
+  req.session.destroy(); //Destroy all session data
+  res.status(200).render('login', {config: reloadConfig(), toast:["true","#6272a4","Successfully signed out"]});
+});
 
 
 app.listen(config['server']['port'], () => {
