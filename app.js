@@ -6,6 +6,8 @@ const session = require('express-session');
 const path = require('path');
 const fs = require('fs'); //filesync
 const crypto = require("crypto");
+const multer = require('multer');
+const os = require('os');
 
 
 app.use(session({
@@ -27,10 +29,8 @@ function reloadConfig() {
   config = JSON.parse(fs.readFileSync('config.json'));
   return config;
 }
-
 //Load errors
 let errors = JSON.parse(fs.readFileSync(config['server']['errors']));
-
 //Load database connection info from config
 const mysql = require('mysql');
 const { response } = require('express');
@@ -40,6 +40,29 @@ const connection = mysql.createConnection({
   password: config['database']['password'],
   database: config['database']['name']
 })
+//set up multer
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'files/')
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname))
+    }
+  }),
+  fileFilter: function(req, file, cb) { 
+    if(config['settings']['banned-mimes'].includes(file.mimetype)) { //Mimetype validation
+      cb(null, false);
+      return cb(new Error('File type not allowed'));
+    }
+    cb(null, true)
+    if(file.size > config['settings']['max-file-size']) { //File size validation
+      cb(null, false);
+      return cb(new Error('File too large'));
+    }
+  }
+});
+
 
 //Middleware to set up session
 function setSession (req, res, next) {
@@ -50,7 +73,6 @@ function setSession (req, res, next) {
     req.session.group = 999; //Set group to 999 by default
   }
   req.session.toast = false; //Set toast to false by default
-  console.log(req.session);
   next()
 }
 app.use(setSession);
@@ -111,7 +133,6 @@ app.post('/register', (req, res) => {
   let email = req.body.email;
   if (username && password && email) { //Check if all required information is present
 		connection.query('SELECT * FROM accounts WHERE username = ? OR email = ?', [username, email], function(err , rows) {
-      console.log(rows);
 			if (err) throw err;
 			if (rows.length > 0) { //Account already exists.  
         if (rows[0].username == username) { //Account with same username exists
@@ -164,7 +185,7 @@ app.post('/auth', function(req, res) {
 	let password = req.body.password;
 	if (username && password) {
     password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
-		connection.query('SELECT * FROM accounts WHERE username = ? OR email = ? AND password = ?', [username, username, password], function(err, rows) {
+		connection.query(`SELECT * FROM accounts WHERE password='${password}' AND username='${username}' OR email='${username}'`, function(err, rows) {
       console.log(rows[0])
 			if (err) throw err;
 			if (rows.length > 0) {
@@ -184,12 +205,20 @@ app.post('/auth', function(req, res) {
 });
 
 //Upload file
-app.post('/upload', function(req, res) {
+app.post('/upload', upload.any('uploads'), function(req, res) {
   if (req.session.loggedin == false) { //Check if user is logged in
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session});
   }
-  
+  if (!req.files) { //Check if files are present
+    return res.status(400).send(errors['missingFiles']);
+  }
+  let files = req.files;
+  let body = req.body;
+  console.log(files);
+  console.log(body);
+  connection.query(`SELECT * FROM hashBans WHERE `, function(err, rows) {
+  });
 });
 
 
