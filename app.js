@@ -41,37 +41,55 @@ const connection = mysql.createConnection({
   database: config['database']['name']
 })
 
+//Middleware to set up session
+function setSession (req, res, next) {
+  if (!req.session.loggedin) {
+    req.session.loggedin = false; //Set logged in to false by default
+  }
+  if (!req.session.group) {
+    req.session.group = 999; //Set group to 999 by default
+  }
+  req.session.toast = false; //Set toast to false by default
+  console.log(req.session);
+  next()
+}
+app.use(setSession);
+
+
+
 
 
 //Register page
 app.get('/register', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('home', {config: reloadConfig(), session:req.session, toast:["true","#6272a4","You are already signed in"]})
+    req.session.toast = ["#6272a4","You are already signed in"];
+    res.status(200).render('home', {config: reloadConfig(), session:req.session})
   } else {
-    res.status(200).render('register', {config: reloadConfig(), toast:['false']});
+    res.status(200).render('register', {config: reloadConfig(), session:req.session});
   }
 });
 //Login page
 app.get('/login', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('home', {config: reloadConfig(), session:req.session, toast:["true","#6272a4","You are already signed in"]})
+    req.session.toast = ["#6272a4","You are already signed in"];
+    res.status(200).render('home', {config: reloadConfig(), session:req.session})
   } else {
-    res.status(200).render('login', {config: reloadConfig(), toast:["false"]});
+    res.status(200).render('login', {config: reloadConfig(), session:req.session});
   }
 });
 app.get('/home', function(req, res) {
-  console.log(req.session.group)
   if (req.session.loggedin == true) {
     res.status(200).render('home', {config: reloadConfig(), session:req.session})
   } else {
-    res.status(200).render('login', {config: reloadConfig(), toast:["true","#ff5555","Please sign in"]});
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session});
   }
   
 });
 
 
 //register account
-app.post('/api/register', (req, res) => {
+app.post('/register', (req, res) => {
   if (config['settings']['registrations'] != 'on') { //Check if registrations are disabled. Return error if they are. 
     res.json(errors['registrationsDisabled']);
   }
@@ -118,7 +136,8 @@ app.post('/api/register', (req, res) => {
       connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', 2, ${inv}, ${invBy}, ${Date.now()})`, (err, rows) => {
         if (err) throw err
       })
-      res.status(201).render('login', {config: reloadConfig(), toast:["true","#6272a4","Account created, please sign in"]});
+      req.session.toast = ["#6272a4","Account created"];
+      res.status(201).redirect('login');
       return;
 		}); 
   } else {
@@ -127,7 +146,7 @@ app.post('/api/register', (req, res) => {
   }
 })
 //log in
-app.post('/api/auth', function(req, res) {
+app.post('/auth', function(req, res) {
 	let username = req.body.username;
 	let password = req.body.password;
 	if (username && password) {
@@ -139,8 +158,8 @@ app.post('/api/auth', function(req, res) {
 				req.session.loggedin = true;
 				req.session.username = username;
         req.session.group = rows[0].group;
-        console.log(req.session.group);
-				res.status(200).render('home', {config: reloadConfig(), session:req.session, toast:["true","#6272a4","Successfully signed in"]});
+        req.session.toast = ["#6272a4","Successfully signed in"];
+				res.status(200).redirect('home');
 			} else {
 				res.status(406).json(errors['invalidLogin']);
 			}			
@@ -152,8 +171,8 @@ app.post('/api/auth', function(req, res) {
 
 //log out
 app.get('/logout', function(req, res) {
-  req.session.destroy(); //Destroy all session data
-  res.status(200).render('login', {config: reloadConfig(), toast:["true","#6272a4","Successfully signed out"]});
+  req.session.destroy();
+  res.status(200).redirect('login');
 });
 
 
