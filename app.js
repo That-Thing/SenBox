@@ -77,6 +77,12 @@ app.get('/login', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session});
   }
 });
+//log out
+app.get('/logout', function(req, res) {
+  req.session.destroy();
+  res.status(200).redirect('login');
+});
+//Home page
 app.get('/home', function(req, res) {
   if (req.session.loggedin == true) {
     res.status(200).render('home', {config: reloadConfig(), session:req.session})
@@ -84,9 +90,16 @@ app.get('/home', function(req, res) {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session});
   }
-  
 });
-
+//Upload page
+app.get('/upload', function(req, res) {
+  if (req.session.loggedin == true) {
+    res.status(200).render('upload', {config: reloadConfig(), session:req.session})
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+  }
+})
 
 //register account
 app.post('/register', (req, res) => {
@@ -158,6 +171,7 @@ app.post('/auth', function(req, res) {
 				req.session.loggedin = true;
 				req.session.username = username;
         req.session.group = rows[0].group;
+        req.session.token = rows[0].token;
         req.session.toast = ["#6272a4","Successfully signed in"];
 				res.status(200).redirect('home');
 			} else {
@@ -169,10 +183,13 @@ app.post('/auth', function(req, res) {
     }
 });
 
-//log out
-app.get('/logout', function(req, res) {
-  req.session.destroy();
-  res.status(200).redirect('login');
+//Upload file
+app.post('/upload', function(req, res) {
+  if (req.session.loggedin == false) { //Check if user is logged in
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+  }
+  
 });
 
 

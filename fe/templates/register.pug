@@ -10,8 +10,9 @@ html
             script(src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous")
             script(src="js/toast/jquery.toast.min.js")
             link(href="js/toast/jquery.toast.min.css" rel="stylesheet")
-    body(class="text-center")
-        div(class="mx-auto rounded p-3 login-form")
+    - var theme = 'text-center theme-' + session.theme
+    body(class=theme)
+        div(class="mx-auto rounded p-3 login-form bg-dark")
             form(action="/register" method="POST")
                 h1(class="mb-3") Sign up
                 div(class="form-floating auth-input")

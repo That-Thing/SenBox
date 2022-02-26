@@ -1,28 +1,36 @@
-.theme-dark {
+:root {
     --body-color: #262c31;
     --text-color: #f8f8f2;
     --link-color: #bd93f9;
     --link-hover-color: #af76ff;
 }
-body.theme-dark {
+body {
     background-color: var(--body-color);
     color: var(--text-color);
 }
 
-.theme-dark a {
+a {
     color: var(--link-color);
 }
-.theme-dark a:hover {
+a:hover {
     color: var(--link-hover-color);
 }
-.theme-dark .progress-bar {
+.progress-bar {
     background-color: var(--link-hover-color);
 }
-.theme-dark .progress {
+.progress {
     background-color: rgba(0,0,0,.125);
 }
-
-
+.dropzone {
+    border: 2px solid #ff79c645;
+    background: #1d2024;
+}
+.dropzone:hover {
+    border: 2px solid #ff79c6;
+}
+.dz-drag-hover {
+    border: 2px solid #ff79c6;
+}
 
 
 
@@ -31,4 +39,12 @@ body.theme-dark {
 }
 .fa-moon {
     color: #bd93f9;
+}
+
+
+.dropzone .dz-preview .dz-image {
+    border-radius: 0px;
+}
+.dropzone .dz-preview.dz-image-preview {
+    background: none;
 }
