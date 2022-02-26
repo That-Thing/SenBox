@@ -8,7 +8,7 @@ const fs = require('fs'); //filesync
 const crypto = require("crypto");
 const multer = require('multer');
 const os = require('os');
-
+const md5File = require('md5-file')
 
 app.use(session({
 	secret: 'secret',
@@ -44,19 +44,19 @@ const connection = mysql.createConnection({
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'files/')
+      cb(null, config['upload']['path']+"/")
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + path.extname(file.originalname))
     }
   }),
   fileFilter: function(req, file, cb) { 
-    if(config['settings']['banned-mimes'].includes(file.mimetype)) { //Mimetype validation
+    if(config['upload']['banned-mimes'].includes(file.mimetype)) { //Mimetype validation
       cb(null, false);
       return cb(new Error('File type not allowed'));
     }
     cb(null, true)
-    if(file.size > config['settings']['max-file-size']) { //File size validation
+    if(file.size > config['upload']['max-file-size']) { //File size validation
       cb(null, false);
       return cb(new Error('File too large'));
     }
@@ -192,7 +192,7 @@ app.post('/auth', function(req, res) {
 				req.session.loggedin = true;
 				req.session.username = username;
         req.session.group = rows[0].group;
-        req.session.token = rows[0].token;
+        req.session.uid = rows[0].id;
         req.session.toast = ["#6272a4","Successfully signed in"];
 				res.status(200).redirect('home');
 			} else {
@@ -217,8 +217,15 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   let body = req.body;
   console.log(files);
   console.log(body);
-  connection.query(`SELECT * FROM hashBans WHERE `, function(err, rows) {
-  });
+  files.forEach(file => {
+    let hash = md5File.sync(file.path);
+    console.log(hash);
+    connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${req.session.uid}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}')`, function(err, rows) {
+      if (err) throw err;
+    });
+  })
+    
+
 });
 
 

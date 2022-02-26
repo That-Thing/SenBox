@@ -48,3 +48,7 @@ a:hover {
 .dropzone .dz-preview.dz-image-preview {
     background: none;
 }
+.dropzone .dz-preview.dz-processing .dz-progress {
+    margin: auto;
+    margin-top: 20%;
+}

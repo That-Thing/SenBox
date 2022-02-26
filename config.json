@@ -13,7 +13,10 @@
     "settings": {
         "name": "SenBox",
         "registrations": "on",
-        "invites": "off",
+        "invites": "off"
+    },
+    "upload": {
+        "path": "files",
         "max-file-size": "1",
         "banned-mimes": ["application/zip", "application/x-zip-compressed","application/exe"]
     }
