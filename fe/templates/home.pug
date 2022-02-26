@@ -37,8 +37,9 @@ html
                     span(class=groupClass) #{session.username}
                 div(class="card-body")
                     div(class="progress")
-                        div(class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 40%" aria-valuenow="2000" aria-valuemin="0" aria-valuemax="5000")
-                    p(class="text-center text-muted") Storage used 2000/5000mb
+                        - var progress = "width: " + Math.round(spaceUsed / spaceTotal * 100) + "%"
+                        div(class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style=progress aria-valuenow=spaceUsed aria-valuemin="0" aria-valuemax=spaceTotal)
+                    p(class="text-center text-muted") Storage used #{spaceUsed}/#{spaceTotal} MB
                     p Total files on site: 99999
                     p Invites: 
                         a(href="/invites" class="text-decoration-none") 5

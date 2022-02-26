@@ -19,5 +19,27 @@
         "path": "files",
         "max-file-size": "1",
         "banned-mimes": ["application/zip", "application/x-zip-compressed","application/exe"]
+    },
+    "groups": {
+        "3": {
+            "name": "User",
+            "id": 3,
+            "default-storage": 1073741824
+        },
+        "2": {
+            "name": "Upgraded",
+            "id": 2,
+            "default-storage": 0
+        },
+        "1": {
+            "name": "Admin",
+            "id": 1,
+            "default-storage": 0
+        },
+        "0": {
+            "name": "root",
+            "id": 0,
+            "default-storage": 0
+        }
     }
 }

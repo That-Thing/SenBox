@@ -77,9 +77,10 @@ function setSession (req, res, next) {
 }
 app.use(setSession);
 
-
-
-
+//Convert bytes to mb
+function convertBytes(bytes) {
+  return (bytes / (1024*1024)).toFixed(2);
+}
 
 //Register page
 app.get('/register', function(req, res) {
@@ -107,7 +108,20 @@ app.get('/logout', function(req, res) {
 //Home page
 app.get('/home', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+    let spaceUsed = 0;
+    let spaceTotal = convertBytes(config['groups'][req.session.group.toString()]['default-storage']);
+    console.log(spaceTotal);
+    let files = [];
+    connection.query(`SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY date DESC`, (err, rows) => {
+      if (err) throw err;
+      rows.forEach(row => { //Get total space used
+        console.log(row);
+        spaceUsed += row.size;
+      });
+      files = rows.slice(0, 4)
+      spaceUsed = convertBytes(spaceUsed); //Convert bytes to mb
+      res.status(200).render('home', {config: reloadConfig(), session:req.session, files: files, spaceUsed: spaceUsed, spaceTotal: Math.round(spaceTotal)});
+    })
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session});
@@ -167,7 +181,7 @@ app.post('/register', (req, res) => {
       if(inv != null) { //Allows the SQL query to insert NULL properly. 
         inv = `'${inv}'`
       }
-      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', 2, ${inv}, ${invBy}, ${Date.now()})`, (err, rows) => {
+      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['user']['id']}, ${inv}, ${invBy}, ${Date.now()})`, (err, rows) => {
         if (err) throw err
       })
       req.session.toast = ["#6272a4","Account created"];
@@ -218,8 +232,7 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   console.log(files);
   console.log(body);
   files.forEach(file => {
-    let hash = md5File.sync(file.path);
-    console.log(hash);
+    let hash = md5File.sync(file.path); //Get MD5 hash of file
     connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${req.session.uid}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}')`, function(err, rows) {
       if (err) throw err;
     });
