@@ -33,12 +33,45 @@ a:hover {
 }
 
 
+footer {
+    border-top: 1px solid rgba(0,0,0,.125)
+}
+nav {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    background: #202428;
+}
+::-webkit-scrollbar-thumb {
+    background: rgb(29 32 36);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(25, 27, 31);
+}
+
+
+
+
+
+
+
 
 .fa-sun {
     color: #f1fa8c;
 }
+.fa-sun {
+    color: #f2ff60;
+}
 .fa-moon {
     color: #bd93f9;
+}
+.fa-moon:hover {
+    color: #af76ff;
 }
 
 
@@ -52,3 +85,4 @@ a:hover {
     margin: auto;
     margin-top: 20%;
 }
+

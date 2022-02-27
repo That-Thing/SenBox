@@ -1,0 +1,11 @@
+.uploaded-image {
+    width: 30%;
+    height: auto;
+}
+.upload-table {
+    display: table;
+    margin-bottom: 5%;
+}
+.uploaded-file {
+    background-color: rgb(29 32 36);
+}

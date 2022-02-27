@@ -1,8 +1,11 @@
-footer(class="position-absolute w-100 bottom-0 bg-dark text-center text-lg-start")
+footer(class="w-100 fixed-bottom bg-dark text-center text-lg-start mt-5 d-flex justify-content-center")
     div(class="text-center p-3")
-        .
-            Copyright 2022 
-        a(href="/" class="text-bold text-decoration-none") #{config['settings']['name']}
+        | Copyright 2022 •
+        a(href="/" class="text-bold text-decoration-none ms-1 me-1") #{config['settings']['name']}
+        | |
+        a(href="/privacy" class="text-bold text-decoration-none ms-1 me-1") Privacy Policy
+        | •
+        a(href="/terms" class="text-bold text-decoration-none ms-1") Terms of Service
 unless session.toast == false
     script.
         $.toast({text: "#{session.toast[1]}", loader: false, bgColor:"#{session.toast[0]}"})    

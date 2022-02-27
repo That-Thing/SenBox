@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.set('view engine', 'pug') //Use pug for templates. 
 app.set('views', './fe/templates'); //Set template directory
 app.use(express.static(__dirname + '/fe/public')); //Set static file directory
-
+app.use('/files', express.static(__dirname + '/files'));
 //Load config
 let config = JSON.parse(fs.readFileSync('config.json'));
 

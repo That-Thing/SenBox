@@ -43,9 +43,18 @@ html
                     p Total files on site: 99999
                     p Invites: 
                         a(href="/invites" class="text-decoration-none") 5
-            div(class="card bg-dark w-75 mx-auto mt-5")
+            div(class="card bg-dark w-75 mx-auto mt-5 table-responsive upload-table")
                 h5(class="card-header") Latest Uploads 
-                div(class="uploaded-content m-3")
-                    img(src="https://cdn.sen.cat/cat/670.jpg" height="300")
+                each file in files
+                    - var mime = file.mime.split('/')[0]
+                    if mime == 'image'
+                        img(class="uploaded-image m-3" src="files/"+file.name height="300")
+                    else
+                        span(class="card uploaded-file m-3 p-2 d-inline-block")
+                            span
+                                i(class="fas fa-file-alt")
+                            span(class="ms-2")
+                                |#{file.filename}
+                        
 
         include include/footer.pug
