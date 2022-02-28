@@ -200,7 +200,7 @@ app.post('/register', (req, res) => {
       if(inv != null) { //Allows the SQL query to insert NULL properly. 
         inv = `'${inv}'`
       }
-      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}), ${req.ip}`, (err, rows) => {
+      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}")`, (err, rows) => {
         if (err) throw err
       })
       req.session.toast = ["#6272a4","Account created"];

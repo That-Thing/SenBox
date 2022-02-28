@@ -8,12 +8,16 @@ window.onload = function() {
         clickable: true,
         addRemoveLinks: true,
     });
-
-    myDropzone.on("complete", function(file) {
-        //console.log(file);
-    });
     myDropzone.on("success", function(file, responseText) {
-        console.log(file); // console should show the ID you pointed to
-        // do stuff with file.id ...
-    });
+        console.log(responseText);
+    })
 };
+
+$(".mbox").each(function() {
+    $(this).click(function() {
+        navigator.clipboard.write($(this)).then(function() {
+            $(this).text("Copied url...");
+        });
+    });
+    
+});
