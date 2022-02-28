@@ -230,14 +230,16 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   let files = req.files;
   let body = req.body;
   console.log(files);
-  console.log(body);
+  returnFiles = new Array();
   files.forEach(file => {
     let hash = md5File.sync(file.path); //Get MD5 hash of file
     connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${req.session.uid}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}')`, function(err, rows) {
       if (err) throw err;
     });
+    returnFiles.push({"filename":file.originalname, path:`/files/${file.filename}`});
   })
-    
+  console.log(returnFiles);
+  return res.status(200).json(returnFiles);
 
 });
 

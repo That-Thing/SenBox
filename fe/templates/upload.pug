@@ -2,10 +2,14 @@ doctype html
 html
     head 
         script(src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js")
+        script(src="js/dropzone.js")
         link(rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css")
         include include/head.pug
         link(href="styles/home.css" rel="stylesheet" type="text/css")
-        script(src="js/dropzone.js")
+        script(src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous")
+        script(src="js/toast/jquery.toast.min.js")
+        link(href="js/toast/jquery.toast.min.css" rel="stylesheet")
+        
         title Upload
     - var theme = 'theme-' + session.theme
     body(class=theme)
@@ -37,5 +41,5 @@ html
             div(class="card mt-5 bg-dark mx-auto w-75")
                 h1(class="card-header bg-dark") Upload Files
                 div(class="card-body")
-                    form(method="POST" action="/upload" class="dropzone dz-clickable" id="file-upload")
+                    form(class="dropzone" id="dropzone") 
         include include/footer.pug
