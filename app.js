@@ -81,6 +81,25 @@ app.use(setSession);
 function convertBytes(bytes) {
   return (bytes / (1024*1024)).toFixed(2);
 }
+//Terms of Service and Privacy Policy
+app.get('/tos', function(req, res) {
+  if (req.session.loggedin == true) {
+    res.status(200).render('tos', {config: reloadConfig(), session:req.session});
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+  }
+})
+app.get('/privacy', function(req, res) {
+  if (req.session.loggedin == true) {
+    res.status(200).render('privacy', {config: reloadConfig(), session:req.session});
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+  }
+})
+
+
 
 //Register page
 app.get('/register', function(req, res) {
@@ -181,7 +200,7 @@ app.post('/register', (req, res) => {
       if(inv != null) { //Allows the SQL query to insert NULL properly. 
         inv = `'${inv}'`
       }
-      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['user']['id']}, ${inv}, ${invBy}, ${Date.now()})`, (err, rows) => {
+      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}), ${req.ip}`, (err, rows) => {
         if (err) throw err
       })
       req.session.toast = ["#6272a4","Account created"];

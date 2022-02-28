@@ -1,0 +1,47 @@
+doctype html 
+html
+    head 
+        include include/head.pug
+        link(href="styles/home.css" rel="stylesheet" type="text/css")
+        title Terms of Service
+    - var theme = 'theme-' + session.theme
+    body(class=theme)
+        nav(class="navbar navbar-expand-lg navbar-dark bg-dark px-2")
+            a(href="/home" class="navbar-brand") #{config['settings']['name']}
+            ul(class="navbar-nav")
+                li(class="nav-item")
+                    a(class="nav-link" href="/home") Home 
+                li(class="nav-item")
+                    a(class="nav-link" href="/upload") Upload
+                li(class="nav-item")
+                    a(class="nav-link" href="/paste") Paste
+                li(class="nav-item")
+                    a(class="nav-link" href="/gallery") Gallery
+                li(class="nav-item")
+                    a(class="nav-link" href="/account") Account
+                li(class="nav-item")
+                    a(class="nav-link" href="/settings") Settings
+            ul(class="navbar-nav ms-auto")
+                li(class="nav-item")
+                    a(class="nav-link" href="/api/theme")
+                        if session.theme == 'dark'
+                            i(class="fas fa-sun")
+                        else
+                            i(class="fas fa-moon")
+                li(class="nav-item")
+                    a(class="nav-link" href="/logout") Sign out        
+        div(class="container")
+            div(class="card bg-dark w-75 mx-auto mt-5")
+                h5(class="card-header") Terms of Service 
+                    span(class="text-muted h6 ms-1") Updated: 2/28/2022
+                div(class="card-body")
+                    p By using #{config['settings']['name']} you agree to the following rules:
+                    ul
+                        li Don't upload files illegal in the US.
+                        li No selling accounts/invites.
+                        li Don't pester staff for invites or unbans.
+                    p Any violation of these rules may lead to your account being terminated without warning. 
+                    p The administration of #{config['settings']['name']} reserves the right to terminate or modify your account without prior warning. 
+
+
+        include include/footer.pug
