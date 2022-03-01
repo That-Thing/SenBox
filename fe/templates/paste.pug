@@ -1,0 +1,56 @@
+doctype html 
+html
+    head
+        include include/head.pug
+        link(href="styles/home.css" rel="stylesheet" type="text/css")
+        title Paste
+    body(class=theme)
+        include include/nav.pug
+        div(class="container")
+            div(class=bg + "card mt-5 mx-auto w-75")
+                h1(class=bg + "card-header") Paste
+                div(class="card-body")
+                    form(action="/paste" method="POST")
+                        input(class="form-control form-control-lg" type="text" placeholder="Title" name="title")
+                        textarea(class="form-control mt-4" id="paste-input" rows="3" name="paste" style="height: 300px")
+                        div(class="mt-2")
+                            input(class="form-check-input" type="checkbox" name="burn" value="on" id="paste-burn")
+                            label(class="form-check-label ms-1" for="paste-burn")
+                            | Burn after reading
+                        label(for="syntax-select")
+                            | Syntax Highlighting
+                        select(class="form-control w-25" id="syntax-select" name="syntax")
+                            option(value="none") None
+                            option(value="auto") Automatic Detection
+                            option(value="bash") Bash 
+                            option(value="c") C
+                            option(value="c#") C#
+                            option(value="c++") C++
+                            option(value="css") CSS
+                            option(value="diff") Diff
+                            option(value="go") Go
+                            option(value="html") HTML/XML
+                            option(value="json") JSON
+                            option(value="java") Java
+                            option(value="javascript") JavaScript
+                            option(value="kotlin") Kotlin
+                            option(value="less") Less
+                            option(value="lua") Lua
+                            option(value="makefile") Makefile
+                            option(value="markdown") Markdown
+                            option(value="objectivec") Objective-C
+                            option(value="php") PHP
+                            option(value="perl") Perl
+                            option(value="ruby") Ruby 
+                            option(value="rust") Rust
+                            option(value="scss") SCSS
+                            option(value="sql") SQL
+                            option(value="shell") Shell
+                            option(value="swift") Swift
+                            option(value="toml") TOML/INI
+                            option(value="typescript") TypeScript
+                            option(value="basic") Visual Basic .NET
+                            option(value="yaml") YAML
+                        button(type="submit" class="btn btn-secondary mt-2") Preview
+                        button(type="submit" class="btn btn-primary mt-2 ms-2") Submit
+        include include/footer.pug

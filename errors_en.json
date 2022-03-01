@@ -6,5 +6,6 @@
     "usernameExists": "Sign up failed: Username taken",
     "emailExists": "Sign up failed: Email already exists",
     "invalidInvite": "Sign up failed: Please input a valid invite",
-    "missingFiles": "Upload error: No files were uploaded"
+    "missingFiles": "Upload error: No files were uploaded",
+    "invalidUsername": "Invalid username"
 }

@@ -10,6 +10,7 @@ const multer = require('multer');
 const os = require('os');
 const md5File = require('md5-file')
 var cookies = require("cookie-parser");
+const { body } = require('express-validator');
 app.use(cookies());
 app.use(session({
 	secret: 'secret',
@@ -157,9 +158,27 @@ app.get('/upload', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
+//Paste page
+app.get('/paste', function(req, res) {
+  if (req.session.loggedin == true) {
+    res.status(200).render('paste', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, path: "paste"})
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
+//Gallery page
+app.get('/gallery', function(req, res) {
+  if (req.session.loggedin == true) {
+    res.status(200).render('gallery', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, path: "gallery"})
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
 
 //register account
-app.post('/register', (req, res) => {
+app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(),(req, res) => {
   if (config['settings']['registrations'] != 'on') { //Check if registrations are disabled. Return error if they are. 
     res.json(errors['registrationsDisabled']);
   }
@@ -167,48 +186,52 @@ app.post('/register', (req, res) => {
 	let password = req.body.password;
   let email = req.body.email;
   if (username && password && email) { //Check if all required information is present
-		connection.query('SELECT * FROM accounts WHERE username = ? OR email = ?', [username, email], function(err , rows) {
-			if (err) throw err;
-			if (rows.length > 0) { //Account already exists.  
-        if (rows[0].username == username) { //Account with same username exists
-          res.status(406).json(errors['usernameExists']);
-          return;
+    if (RegExp('^[a-zA-Z0-9_.-]*$').test(username) == true) { //Make sure that only some characters are allowed    
+      connection.query('SELECT * FROM accounts WHERE username = ? OR email = ?', [username, email], function(err , rows) {
+        if (err) throw err;
+        if (rows.length > 0) { //Account already exists.  
+          if (rows[0].username == username) { //Account with same username exists
+            res.status(406).json(errors['usernameExists']);
+            return;
+          }
+          if (rows[0].email == email) { //Account with email exists
+            res.status(406).json(errors['emailExists']);
+            return;
+          }
         }
-        if (rows[0].email == email) { //Account with email exists
-          res.status(406).json(errors['emailExists']);
-          return;
+        let inv = null; //Initialize invite
+        let invBy = null; //Initialize invited by
+        if (config['server']['invites'] == 'on') { //Check if invites are enabled
+          let invite = req.body.invite;
+          connection.query('SELECT * FROM invites WHERE invite = ?', [invite], (err, rows) => {
+            if (err) throw err
+            if (rows.length == 0) { //Invite doesn't exist
+              res.status(406).json(errors['invalidInvite']);
+              return;
+            }
+            if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
+              res.status(406).json(errors['invalidInvite']);
+              return;
+            }
+            inv = invite; //If all the checks pass, the invite can be used
+            invBy = rows[0].creator; //Sets invited by to ID of invite creator
+          })
         }
-			}
-      let inv = null; //Initialize invite
-      let invBy = null; //Initialize invited by
-      if (config['server']['invites'] == 'on') { //Check if invites are enabled
-        let invite = req.body.invite;
-        connection.query('SELECT * FROM invites WHERE invite = ?', [invite], (err, rows) => {
+        password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password+salt
+        let token = crypto.createHash('sha256').update(username+password+config['server']['salt']).digest('base64'); //User Token
+        if(inv != null) { //Allows the SQL query to insert NULL properly. 
+          inv = `'${inv}'`
+        }
+        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}")`, (err, rows) => {
           if (err) throw err
-          if (rows.length == 0) { //Invite doesn't exist
-            res.status(406).json(errors['invalidInvite']);
-            return;
-          }
-          if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
-            res.status(406).json(errors['invalidInvite']);
-            return;
-          }
-          inv = invite; //If all the checks pass, the invite can be used
-          invBy = rows[0].creator; //Sets invited by to ID of invite creator
         })
-      }
-      password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password+salt
-      let token = crypto.createHash('sha256').update(username+password+config['server']['salt']).digest('base64'); //User Token
-      if(inv != null) { //Allows the SQL query to insert NULL properly. 
-        inv = `'${inv}'`
-      }
-      connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}")`, (err, rows) => {
-        if (err) throw err
-      })
-      req.session.toast = ["#6272a4","Account created"];
-      res.status(201).redirect('login');
-      return;
-		}); 
+        req.session.toast = ["#6272a4","Account created"];
+        res.status(201).redirect('login');
+        return;
+      }); 
+    } else {
+      res.status(406).json(errors['invalidUsername']);
+    }
   } else {
     res.status(417).json(errors['unfilledFields']);
     return;
@@ -218,23 +241,27 @@ app.post('/register', (req, res) => {
 app.post('/auth', function(req, res) {
 	let username = req.body.username;
 	let password = req.body.password;
-	if (username && password) {
-    password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
-		connection.query(`SELECT * FROM accounts WHERE password='${password}' AND username='${username}' OR email='${username}'`, function(err, rows) {
-			if (err) throw err;
-			if (rows.length > 0) {
-				req.session.loggedin = true;
-				req.session.username = username;
-        req.session.group = rows[0].group;
-        req.session.uid = rows[0].id;
-        req.session.toast = ["#6272a4","Successfully signed in"];
-				res.status(200).redirect('home');
-			} else {
-				res.status(406).json(errors['invalidLogin']);
-			}			
-		});
+  if (RegExp('^[a-zA-Z0-9@_.-]*$').test(username) == true) { //Username and email regex. 
+    if (username && password) {
+      password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
+      connection.query(`SELECT * FROM accounts WHERE password='${password}' AND username='${username}' OR email='${username}'`, function(err, rows) {
+        if (err) throw err;
+        if (rows.length > 0) {
+          req.session.loggedin = true;
+          req.session.username = username;
+          req.session.group = rows[0].group;
+          req.session.uid = rows[0].id;
+          req.session.toast = ["#6272a4","Successfully signed in"];
+          res.status(200).redirect('home');
+        } else {
+          res.status(406).json(errors['invalidLogin']);
+        }			
+      });
+      } else {
+          res.status(417).json(errors['loginInfoMissing']);
+      }
     } else {
-        res.status(417).json(errors['loginInfoMissing']);
+      res.status(406).json(errors['invalidUsername']);
     }
 });
 
