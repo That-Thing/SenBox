@@ -55,6 +55,29 @@ nav {
 }
 
 
+/*Light theme*/
+.theme-light {
+    --body-color: #f8f8f2;
+    --text-color: #262c31;
+    --link-color: #bd93f9;
+    --link-hover-color: #af76ff;
+}
+::-webkit-scrollbar-track.theme-light {
+    background: #92a5b8;
+}
+::-webkit-scrollbar-thumb.theme-light {
+    background: rgb(193, 214, 241);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb.theme-light:hover {
+    background: rgb(118, 127, 146);
+}
+
+
+
+
+
+
 
 
 

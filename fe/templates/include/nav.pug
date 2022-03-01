@@ -2,35 +2,17 @@ nav(class="navbar navbar-expand-lg navbar-dark bg-dark px-2")
             a(href="/home" class="navbar-brand") #{config['settings']['name']}  
             ul(class="navbar-nav")
                 li(class="nav-item")
-                    if path == 'home'
-                        a(class="nav-link active" href="/home") Home
-                    else
-                        a(class="nav-link" href="/home") Home
+                    a(class=path=='home' ? 'nav-link active' : 'nav-link' href="/home" ) Home
                 li(class="nav-item")
-                    if path == 'upload'
-                        a(class="nav-link active" href="/upload") Upload
-                    else
-                        a(class="nav-link" href="/upload") Upload
+                    a(class=path=='upload' ? 'nav-link active' : 'nav-link' href="/upload") Upload
                 li(class="nav-item")
-                    if path == 'paste'
-                        a(class="nav-link active" href="/paste") Paste
-                    else
-                        a(class="nav-link" href="/paste") Paste
+                    a(class=path=='past' ? 'nav-link active' : 'nav-link' href="/paste") Paste
                 li(class="nav-item")
-                    if path == 'gallery'
-                        a(class="nav-link active" href="/gallery") Gallery
-                    else
-                        a(class="nav-link" href="/gallery") Gallery
+                    a(class=path=='gallery' ? 'nav-link active' : 'nav-link' href="/gallery") Gallery
                 li(class="nav-item")
-                    if path == 'account'
-                        a(class="nav-link active" href="/account") Account
-                    else
-                        a(class="nav-link" href="/account") Account
+                    a(class=path=='account' ? 'nav-link active' : 'nav-link' href="/account") Account
                 li(class="nav-item")
-                    if path == 'settings'
-                        a(class="nav-link active" href="/settings") Settings
-                    else
-                        a(class="nav-link" href="/settings") Settings
+                    a(class=path=='settings' ? 'nav-link active' : 'nav-link' href="/settings") Settings
             ul(class="navbar-nav ms-auto")
                 li(class="nav-item")
                     if appTheme == 'dark'
