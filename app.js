@@ -72,6 +72,9 @@ function setSession (req, res, next) {
   if (!req.session.group) {
     req.session.group = 999; //Set group to 999 by default
   }
+  if (req.cookies.theme !== undefined) {
+    res.cookie('theme', "dark");
+  }
   req.session.toast = false; //Set toast to false by default
   next()
 }
