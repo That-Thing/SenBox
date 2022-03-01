@@ -62,15 +62,15 @@ nav {
     --link-color: #bd93f9;
     --link-hover-color: #af76ff;
 }
-::-webkit-scrollbar-track.theme-light {
-    background: #92a5b8;
+.theme-light::-webkit-scrollbar-track {
+    background: #d5d5d5;
 }
-::-webkit-scrollbar-thumb.theme-light {
-    background: rgb(193, 214, 241);
+.theme-light::-webkit-scrollbar-thumb {
+    background: rgb(177, 177, 177);
     border-radius: 6px;
 }
-::-webkit-scrollbar-thumb.theme-light:hover {
-    background: rgb(118, 127, 146);
+.theme-light::-webkit-scrollbar-thumb:hover {
+    background: rgb(146, 146, 146);
 }
 .theme-light .uploaded-file {
     background-color: rgb(240 241 242);
