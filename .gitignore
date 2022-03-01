@@ -1,2 +1,2 @@
 files/*
-config.json
+node_modules/.bin/md5-file

@@ -9,7 +9,8 @@ const crypto = require("crypto");
 const multer = require('multer');
 const os = require('os');
 const md5File = require('md5-file')
-
+var cookies = require("cookie-parser");
+app.use(cookies());
 app.use(session({
 	secret: 'secret',
 	resave: true,
@@ -72,7 +73,7 @@ function setSession (req, res, next) {
   if (!req.session.group) {
     req.session.group = 999; //Set group to 999 by default
   }
-  if (req.cookies.theme !== undefined) {
+  if (!req.cookies.theme) {
     res.cookie('theme', "dark");
   }
   req.session.toast = false; //Set toast to false by default
@@ -87,18 +88,18 @@ function convertBytes(bytes) {
 //Terms of Service and Privacy Policy
 app.get('/tos', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('tos', {config: reloadConfig(), session:req.session});
+    res.status(200).render('tos', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   }
 })
 app.get('/privacy', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('privacy', {config: reloadConfig(), session:req.session});
+    res.status(200).render('privacy', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   }
 })
 
@@ -108,18 +109,18 @@ app.get('/privacy', function(req, res) {
 app.get('/register', function(req, res) {
   if (req.session.loggedin == true) {
     req.session.toast = ["#6272a4","You are already signed in"];
-    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+    res.status(200).render('home', {config: reloadConfig(), session:req.session, theme: req.cookies.theme})
   } else {
-    res.status(200).render('register', {config: reloadConfig(), session:req.session});
+    res.status(200).render('register', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   }
 });
 //Login page
 app.get('/login', function(req, res) {
   if (req.session.loggedin == true) {
     req.session.toast = ["#6272a4","You are already signed in"];
-    res.status(200).render('home', {config: reloadConfig(), session:req.session})
+    res.status(200).render('home', {config: reloadConfig(), session:req.session, theme: req.cookies.theme })
   } else {
-    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   }
 });
 //log out
@@ -142,20 +143,20 @@ app.get('/home', function(req, res) {
       });
       files = rows.slice(0, 4)
       spaceUsed = convertBytes(spaceUsed); //Convert bytes to mb
-      res.status(200).render('home', {config: reloadConfig(), session:req.session, files: files, spaceUsed: spaceUsed, spaceTotal: Math.round(spaceTotal)});
+      res.status(200).render('home', {config: reloadConfig(), session:req.session, theme: req.cookies.theme, files: files, spaceUsed: spaceUsed, spaceTotal: Math.round(spaceTotal), path: "home"});
     })
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   }
 });
 //Upload page
 app.get('/upload', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('upload', {config: reloadConfig(), session:req.session})
+    res.status(200).render('upload', {config: reloadConfig(), session:req.session, theme: req.cookies.theme, path: "upload"})
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   }
 })
 
@@ -222,7 +223,6 @@ app.post('/auth', function(req, res) {
 	if (username && password) {
     password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
 		connection.query(`SELECT * FROM accounts WHERE password='${password}' AND username='${username}' OR email='${username}'`, function(err, rows) {
-      console.log(rows[0])
 			if (err) throw err;
 			if (rows.length > 0) {
 				req.session.loggedin = true;
@@ -244,7 +244,7 @@ app.post('/auth', function(req, res) {
 app.post('/upload', upload.any('uploads'), function(req, res) {
   if (req.session.loggedin == false) { //Check if user is logged in
     req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session});
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, theme: req.cookies.theme});
   }
   if (!req.files) { //Check if files are present
     return res.status(400).send(errors['missingFiles']);
