@@ -33,10 +33,11 @@ nav(class="navbar navbar-expand-lg navbar-dark bg-dark px-2")
                         a(class="nav-link" href="/settings") Settings
             ul(class="navbar-nav ms-auto")
                 li(class="nav-item")
-                    a(class="nav-link" href="/api/theme")
-                        if session.theme == 'dark'
-                            i(class="fas fa-sun")
-                        else
-                            i(class="fas fa-moon")
+                    if appTheme == 'dark'
+                        span(class="nav-link" onclick="setTheme('light')" id="theme-button")
+                            i(class="fas fa-sun" id="theme-icon")
+                    else
+                        span(class="nav-link" onclick="setTheme('dark')" id="theme-button")
+                            i(class="fas fa-moon" id="theme-icon")
                 li(class="nav-item")
                     a(class="nav-link" href="/logout") Sign out
