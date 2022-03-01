@@ -11,12 +11,11 @@ html
         link(href="js/toast/jquery.toast.min.css" rel="stylesheet")
         
         title Upload
-    - var theme = 'theme-' + session.theme
     body(class=theme)
         include include/nav.pug
         div(class="container")
-            div(class="card mt-5 bg-dark mx-auto w-75")
-                h1(class="card-header bg-dark") Upload Files
+            div(class=bg + "card mt-5 mx-auto w-75")
+                h1(class=bg + "card-header") Upload Files
                 div(class="card-body")
                     form(class="dropzone" id="dropzone")
         include include/footer.pug

@@ -133,7 +133,6 @@ app.get('/home', function(req, res) {
   if (req.session.loggedin == true) {
     let spaceUsed = 0;
     let spaceTotal = convertBytes(config['groups'][req.session.group.toString()]['default-storage']);
-    console.log(spaceTotal);
     let files = [];
     connection.query(`SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY date DESC`, (err, rows) => {
       if (err) throw err;
@@ -250,7 +249,6 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   }
   let files = req.files;
   let body = req.body;
-  console.log(files);
   returnFiles = new Array();
   files.forEach(file => {
     let hash = md5File.sync(file.path); //Get MD5 hash of file
@@ -258,8 +256,7 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
       if (err) throw err;
     });
     returnFiles.push({"filename":file.originalname, path:`/files/${file.filename}`});
-  })
-  console.log(returnFiles);
+  });
   return res.status(200).json(returnFiles);
 
 });

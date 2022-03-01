@@ -2,13 +2,11 @@ doctype html
 html
     head 
         include include/head.pug
-        link(href="styles/home.css" rel="stylesheet" type="text/css")
         title #{config['settings']['name']}
-    - var theme = 'theme-' + session.theme
     body(class=theme)
         include include/nav.pug
         div(class="container")
-            div(class="card bg-dark w-75 mx-auto mt-5")
+            div(class=bg + "card w-75 mx-auto mt-5")
                 h5(class="card-header") Welcome, 
                     - var groupClass = "usergroup-" + session.group;
                     span(class=groupClass) #{session.username}
@@ -20,7 +18,7 @@ html
                     p Total files on site: 99999
                     p Invites: 
                         a(href="/invites" class="text-decoration-none") 5
-            div(class="card bg-dark w-75 mx-auto mt-5 table-responsive upload-table")
+            div(class=bg + "card w-75 mx-auto mt-5 table-responsive upload-table")
                 h5(class="card-header") Latest Uploads 
                 div(class="card-body")
                     each file in files

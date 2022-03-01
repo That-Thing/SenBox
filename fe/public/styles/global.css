@@ -72,8 +72,16 @@ nav {
 ::-webkit-scrollbar-thumb.theme-light:hover {
     background: rgb(118, 127, 146);
 }
-
-
+.theme-light .uploaded-file {
+    background-color: rgb(240 241 242);
+}
+.theme-light .dropzone {
+    border: 2px solid #ff79c678;
+    background: rgb(240 241 242);
+}
+.theme-light .dropzone:hover {
+    border: 2px solid #ff79c6;
+}
 
 
 
