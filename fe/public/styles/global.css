@@ -116,3 +116,18 @@ nav {
     width: 15%;
     height: auto;
 }
+
+.avatar {
+    max-height: 150px;
+    max-width: 150px;
+}
+.username {
+    background-color: #00000091;
+    color: #f8f8f2;
+}
+.uid {
+    color: #c7c7c7;
+}
+.user-background {
+    background-size: cover;
+}

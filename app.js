@@ -175,11 +175,31 @@ app.get('/gallery', function(req, res) {
       if (err) throw err;
       files = rows;
       console.log(files);
-      res.status(200).render('gallery', {config: reloadConfig(), files: files, session:req.session, appTheme : req.cookies.theme, path: "gallery"})
+      res.status(200).render('gallery', {config: reloadConfig(), files: files, session:req.session, appTheme: req.cookies.theme, path: "gallery"})
     })
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
+
+//Useraccount page
+app.get('/user/:user', function(req, res) {
+  if (req.session.loggedin == true) {
+    var user = req.params['user'];
+    if (RegExp('^[a-zA-Z0-9_.-]*$').test(user) == true) {
+      connection.query(`SELECT * FROM accounts WHERE username='${user}'`, (err, rows) => {
+        if(rows.length == 0) { //User doesn't exist in DB
+          res.sendStatus(404);
+        }
+        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0]});
+      })
+    } else {
+      res.status(406).json(errors['invalidUsername']);
+    }
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
 
