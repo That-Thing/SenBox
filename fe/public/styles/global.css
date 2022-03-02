@@ -87,11 +87,6 @@ nav {
 
 
 
-
-
-
-
-
 .fa-sun {
     color: #f1fa8c;
 }
@@ -117,3 +112,7 @@ nav {
     margin-top: 20%;
 }
 
+.gallery-image {
+    width: 15%;
+    height: auto;
+}

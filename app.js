@@ -170,7 +170,13 @@ app.get('/paste', function(req, res) {
 //Gallery page
 app.get('/gallery', function(req, res) {
   if (req.session.loggedin == true) {
-    res.status(200).render('gallery', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, path: "gallery"})
+    let files = [];
+    connection.query(`SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY date DESC`, (err, rows) => {
+      if (err) throw err;
+      files = rows;
+      console.log(files);
+      res.status(200).render('gallery', {config: reloadConfig(), files: files, session:req.session, appTheme : req.cookies.theme, path: "gallery"})
+    })
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});

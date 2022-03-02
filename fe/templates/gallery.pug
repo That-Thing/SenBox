@@ -1,0 +1,45 @@
+doctype html 
+html
+    head
+        include include/head.pug
+        link(href="styles/home.css" rel="stylesheet" type="text/css")
+        title Paste
+    body(class=theme)
+        include include/nav.pug
+        div(class="container")
+            div(class="row")
+                div(class="col-lg-6 mb-4 w-25")
+                    div(class=bg + "card mt-5 mx-auto")
+                        h5(class=bg + "card-header") Controls
+                        div(class="card-body")
+                            form(action="/filter" method="GET")
+                                input(class="form-control" type="text" placeholder="Filename or display name" name="filter")
+                                button(class="btn btn-primary btn-block mt-2") 
+                                    i(class="fas fa-search") 
+                                    span(class="ms-1") Search
+                            label(for="order-by" class="mt-1") Order by
+                            select(class="form-control" id="order-by")
+                                option(value="new-old") Upload date (new-old)
+                                option(value="old-new") Upload date (old-new)
+                                option(value="name") Name (A-Z)
+                                option(value="name-desc") Name (Z-A)
+                                option(value="type") File type
+                                option(value="size") Size (small-large)
+                                option(value="size-desc") Size (large-small)
+
+                        </select>
+                div(class="col-lg-6 mb-4 w-75") 
+                    div(class=bg + "card mt-5 mx-auto table-responsive upload-table")
+                        h5(class=bg + "card-header") Gallery
+                        div(class="card-body")
+                        for file in files
+                            if file.mime.split('/')[0] == 'image'
+                                img(class="gallery-image m-3" src="files/"+file.name height="150")
+                            else
+                                span(class="card uploaded-file m-3 p-2 d-inline-block")
+                                    span
+                                        i(class="fas fa-file-alt")
+                                    span(class="ms-2")
+                                        |#{file.filename}
+
+        include include/footer.pug
