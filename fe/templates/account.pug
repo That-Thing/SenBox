@@ -18,16 +18,18 @@ html
                             span(class="d-flex")
                                 p(class="mb-0 mt-0") Invited by: 
                                 a(class="mb-0 mt-0 ms-1" href="/users/test") Test
-                            h5(class=bg + "card-header") Links
+                            h5(class=bg + "card-header") Links                            
                             span(class="d-flex")
                                 i(class="fa-brands fa-discord mt-auto mb-auto")
                                 p(class="ms-1 mt-auto mb-auto") discordUsername#1234
-                            span(class="d-flex")
-                                i(class="fa-brands fa-twitter mt-auto mb-auto")
-                                a(class="ms-1 mt-auto mb-auto" href="https://twitter.com/twitterUsername") @twitterUsername   
-                            span(class="d-flex")
-                                i(class="fa-solid fa-link mt-auto mb-auto")
-                                a(class="ms-1 mt-auto mb-auto" href="https://sen.cat") sen.cat                          
+                            if user.twitter
+                                span(class="d-flex")
+                                    i(class="fa-brands fa-twitter mt-auto mb-auto")
+                                    a(class="ms-1 mt-auto mb-auto" href="https://twitter.com/twitterUsername") @twitterUsername   
+                            if user.website
+                                span(class="d-flex")
+                                    i(class="fa-solid fa-link mt-auto mb-auto")
+                                    a(class="ms-1 mt-auto mb-auto" href="https://sen.cat" target="_blank") sen.cat                          
                 div(class="col-lg-6 mb-4 w-75")
                     div(class=bg + "card mt-5 mx-auto w-100 p-2")
                         h5(class=bg + "card-header") User
@@ -44,5 +46,5 @@ html
                         h5(class=bg + "card-header d-flex")
                             p(class='mt-auto mb-auto') About  
                             a(href="/user/"+user.username+"/edit" class="ms-auto btn btn-primary") Edit profile
-                        p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam maximus magna at neque porttitor, quis accumsan risus feugiat. Donec orci sapien, scelerisque a mi nec, fringilla congue augue. Praesent quis faucibus justo, at ultricies turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Suspendisse tortor erat, imperdiet at mauris nec, porta venenatis dolor. Vestibulum volutpat magna nec diam cursus, et tempus ante mollis. Vivamus pretium risus tincidunt, congue erat eu, feugiat est.
+                        p #{user.bio}
         include include/footer.pug

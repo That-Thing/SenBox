@@ -7,7 +7,7 @@ html
     body(class=theme)
         include include/nav.pug
         div(class="container")
-            form(action="/users/"+user.username + "/update" method="POST") 
+            form(action="/user/"+user.username + "/update" method="POST") 
                 div(class="row")
                     div(class="col-lg-6 mb-4 w-25")
                         div(class=bg + "card mt-5 mx-auto")
@@ -51,5 +51,5 @@ html
                                 p(class='mt-auto mb-auto me-auto') About  
                                 a(href="/user/"+user.username class="ms-auto btn btn-danger") Cancel
                                 button(type="submit" class="ms-2 btn btn-primary") Save
-                            textarea(class="form-control mt-4" id="bio" rows="3" name="bio" value=user.bio)
+                            textarea(class="form-control mt-4" id="bio" rows="3" name="bio") #{user.bio}
         include include/footer.pug

@@ -36,6 +36,7 @@ let errors = JSON.parse(fs.readFileSync(config['server']['errors']));
 //Load database connection info from config
 const mysql = require('mysql');
 const { response } = require('express');
+const { connect } = require('http2');
 const connection = mysql.createConnection({
   host: config['database']['host'],
   user: config['database']['user'],
@@ -223,6 +224,28 @@ app.get('/user/:user/edit', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
+app.post('/user/:user/update', body('bio').not().isEmpty().trim().escape(), body('twitter').trim().escape(), body('website').trim().escape(), function(req, res) { 
+  if (req.session.loggedin == true) {
+    let user = req.params['user'];
+    let bio = req.body.bio;
+    let twitter = req.body.twitter;
+    let website = req.body.website
+    if (RegExp('^[a-zA-Z0-9_.-]*$').test(user) == true && req.session.username == user) {
+      connection.query(`UPDATE accounts SET bio='${bio}', twitter='${twitter}', website='${website}'`, (err, rows) => {
+        if (err) throw err;
+        res.status(200).redirect("/user/"+user);
+      })
+    } else {
+      res.status(406).json(errors['invalidUsername']);
+    }
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
+
+
+
 //register account
 app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(),(req, res) => {
   if (config['settings']['registrations'] != 'on') { //Check if registrations are disabled. Return error if they are. 
