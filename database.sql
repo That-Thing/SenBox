@@ -28,6 +28,12 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `invite` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `invitedBy` int(11) DEFAULT NULL,
   `joinDate` bigint(20) DEFAULT NULL,
+  `ip` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `banner` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar` text COLLATE utf8mb4_unicode_ci DEFAULT '/images/default.png' COMMENT 'User avatar',
+  `bio` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `twitter` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `website` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
