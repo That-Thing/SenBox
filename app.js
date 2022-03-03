@@ -183,7 +183,7 @@ app.get('/gallery', function(req, res) {
   }
 })
 
-//Useraccount page
+//User account page
 app.get('/user/:user', function(req, res) {
   if (req.session.loggedin == true) {
     var user = req.params['user'];
@@ -202,7 +202,25 @@ app.get('/user/:user', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
-
+//Account management page
+app.get('/user/:user/edit', function(req, res) {
+  if (req.session.loggedin == true) {
+    var user = req.params['user'];
+    if (RegExp('^[a-zA-Z0-9_.-]*$').test(user) == true && req.session.username == user) {
+      connection.query(`SELECT * FROM accounts WHERE username='${user}'`, (err, rows) => {
+        if(rows.length == 0) { //User doesn't exist in DB
+          res.sendStatus(404);
+        }
+        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0]});
+      })
+    } else {
+      res.status(406).json(errors['invalidUsername']);
+    }
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
+  }
+})
 //register account
 app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(),(req, res) => {
   if (config['settings']['registrations'] != 'on') { //Check if registrations are disabled. Return error if they are. 

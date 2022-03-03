@@ -31,13 +31,18 @@ html
                 div(class="col-lg-6 mb-4 w-75")
                     div(class=bg + "card mt-5 mx-auto w-100 p-2")
                         h5(class=bg + "card-header") User
-                        div(class="rounded p-4 user-background" style="background-image: url('https://i.imgur.com/LSUQqKY.jpg');")
+                        if user.banner
+                            -var bannerDiv = "background-image: url(;" + user.banner + ");"
+                        else
+                            -var bannerDiv = "background: #404040;"
+                        div(class="rounded p-4 user-background" style=bannerDiv)
                             div(class="d-flex")
-                                img(src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt=user.username class="img-thumbnail rounded-circle avatar") 
+                                img(src=user.avatar alt=user.username class="img-thumbnail rounded-circle avatar") 
                                 div(class="d-flex mt-auto mb-auto ms-3 p-1 username")
                                     h4(class="mb-0 mt-0") #{user.username}
                                     h4(class="uid mb-0 mt-0") ##{user.id} 
-                        h5(class=bg + "card-header") About  
-                            button(type="button" class="btn btn-primary") Edit profile
+                        h5(class=bg + "card-header d-flex")
+                            p(class='mt-auto mb-auto') About  
+                            button(type="button" class="ms-auto btn btn-primary") Edit profile
                         p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam maximus magna at neque porttitor, quis accumsan risus feugiat. Donec orci sapien, scelerisque a mi nec, fringilla congue augue. Praesent quis faucibus justo, at ultricies turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Suspendisse tortor erat, imperdiet at mauris nec, porta venenatis dolor. Vestibulum volutpat magna nec diam cursus, et tempus ante mollis. Vivamus pretium risus tincidunt, congue erat eu, feugiat est.
         include include/footer.pug

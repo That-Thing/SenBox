@@ -6,8 +6,8 @@
     },
     "database": {
         "host":"localhost",
-        "user":"senbox",
-        "password":"senbox",
+        "user":"root",
+        "password":"",
         "name":"senbox"
     },
     "settings": {
