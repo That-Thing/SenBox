@@ -131,3 +131,16 @@ nav {
 .user-background {
     background-size: cover;
 }
+.change-banner-button {
+    display: none;
+}
+.edit-banner:hover .change-banner-button {
+    display: inline-block;
+}
+.change-avatar-button {
+    display: none;
+    transform: translateY(400%) translateX(20%);
+}
+.edit-avatar:hover .change-avatar-button {
+    display: block;
+}

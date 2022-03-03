@@ -14,7 +14,7 @@ html
                         div(class="card-body p-2")
                             span(class="d-flex")
                                 p(class="mb-0 mt-0") Join Date:
-                                p(class="mb-0 mt-0 ms-1 text-muted") January 1st, 2000 
+                                p(class="mb-0 mt-0 ms-1 text-muted") #{date}
                             span(class="d-flex")
                                 p(class="mb-0 mt-0") Invited by: 
                                 a(class="mb-0 mt-0 ms-1" href="/users/test") Test
@@ -43,6 +43,6 @@ html
                                     h4(class="uid mb-0 mt-0") ##{user.id} 
                         h5(class=bg + "card-header d-flex")
                             p(class='mt-auto mb-auto') About  
-                            button(type="button" class="ms-auto btn btn-primary") Edit profile
+                            a(href="/user/"+user.username+"/edit" class="ms-auto btn btn-primary") Edit profile
                         p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam maximus magna at neque porttitor, quis accumsan risus feugiat. Donec orci sapien, scelerisque a mi nec, fringilla congue augue. Praesent quis faucibus justo, at ultricies turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Suspendisse tortor erat, imperdiet at mauris nec, porta venenatis dolor. Vestibulum volutpat magna nec diam cursus, et tempus ante mollis. Vivamus pretium risus tincidunt, congue erat eu, feugiat est.
         include include/footer.pug

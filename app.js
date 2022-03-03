@@ -192,7 +192,8 @@ app.get('/user/:user', function(req, res) {
         if(rows.length == 0) { //User doesn't exist in DB
           res.sendStatus(404);
         }
-        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0]});
+        var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
+        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date});
       })
     } else {
       res.status(406).json(errors['invalidUsername']);
@@ -211,7 +212,8 @@ app.get('/user/:user/edit', function(req, res) {
         if(rows.length == 0) { //User doesn't exist in DB
           res.sendStatus(404);
         }
-        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0]});
+        var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
+        res.status(200).render('editProfile', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date});
       })
     } else {
       res.status(406).json(errors['invalidUsername']);
@@ -266,7 +268,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
         if(inv != null) { //Allows the SQL query to insert NULL properly. 
           inv = `'${inv}'`
         }
-        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}")`, (err, rows) => {
+        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL)`, (err, rows) => {
           if (err) throw err
         })
         req.session.toast = ["#6272a4","Account created"];

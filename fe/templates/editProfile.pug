@@ -1,0 +1,55 @@
+doctype html 
+html
+    head
+        include include/head.pug
+        link(href="styles/home.css" rel="stylesheet" type="text/css")
+        title #{user.username}
+    body(class=theme)
+        include include/nav.pug
+        div(class="container")
+            form(action="/users/"+user.username + "/update" method="POST") 
+                div(class="row")
+                    div(class="col-lg-6 mb-4 w-25")
+                        div(class=bg + "card mt-5 mx-auto")
+                            h5(class=bg + "card-header") Information
+                            div(class="card-body p-2")
+                                span(class="d-flex")
+                                    p(class="mb-0 mt-0") Join Date:
+                                    p(class="mb-0 mt-0 ms-1 text-muted") #{date}
+                                span(class="d-flex")
+                                    p(class="mb-0 mt-0") Invited by: 
+                                    a(class="mb-0 mt-0 ms-1" href="/users/test") Test
+                                h5(class=bg + "card-header") Links
+                                span(class="d-flex")
+                                    i(class="fa-brands fa-discord mt-auto mb-auto")
+                                    p(class="ms-1 mt-auto mb-auto") discordUsername#1234
+                                span(class="d-flex")
+                                    i(class="fa-brands fa-twitter mt-auto mb-auto")
+                                    input(class="form-control form-control-sm mt-1 ms-1" type="text" placeholder="Twitter username" name="twitter" value=user.twitter)
+                                span(class="d-flex")
+                                    i(class="fa-solid fa-link mt-auto mb-auto")
+                                    input(class="form-control form-control-sm mt-1 ms-1" type="text" placeholder="https://" name="website" value=user.website)
+                    div(class="col-lg-6 mb-4 w-75")
+                        div(class=bg + "card mt-5 mx-auto w-100 p-2")
+                            h5(class=bg + "card-header") User
+                            if user.banner
+                                -var bannerDiv = "background-image: url(;" + user.banner + ");"
+                            else
+                                -var bannerDiv = "background: #404040;"
+                            div(class="rounded p-4 user-background edit-banner" style=bannerDiv)
+                                input(type="file" accept="image/*" style="display: none;" id="banner-input")
+                                button(type="button" class="ms-auto btn btn-secondary float-end change-banner-button" onclick="document.getElementById('banner-input').click()") Change banner
+                                div(class="d-flex")
+                                    div(class="edit-avatar")
+                                        input(type="file" accept="image/*" style="display: none;" id="avatar-input")
+                                        a(class="position-absolute change-avatar-button" onclick="document.getElementById('avatar-input').click()") Change avatar
+                                        img(src=user.avatar alt=user.username class="img-thumbnail rounded-circle avatar") 
+                                    div(class="d-flex mt-auto mb-auto ms-3 p-1 username")
+                                        h4(class="mb-0 mt-0") #{user.username}
+                                        h4(class="uid mb-0 mt-0") ##{user.id} 
+                            h5(class=bg + "card-header d-flex")
+                                p(class='mt-auto mb-auto me-auto') About  
+                                a(href="/user/"+user.username class="ms-auto btn btn-danger") Cancel
+                                button(type="submit" class="ms-2 btn btn-primary") Save
+                            textarea(class="form-control mt-4" id="bio" rows="3" name="bio" value=user.bio)
+        include include/footer.pug
