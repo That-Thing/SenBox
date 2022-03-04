@@ -22,6 +22,10 @@ html
                             span(class="d-flex")
                                 i(class="fa-brands fa-discord mt-auto mb-auto")
                                 p(class="ms-1 mt-auto mb-auto") discordUsername#1234
+                            if user.location
+                                span(class="d-flex")
+                                    i(class="fa-solid fa-location-dot mt-auto mb-auto")
+                                    span(class="ms-1 mt-auto mb-auto") #{user.location }
                             if user.twitter
                                 span(class="d-flex")
                                     i(class="fa-brands fa-twitter mt-auto mb-auto")

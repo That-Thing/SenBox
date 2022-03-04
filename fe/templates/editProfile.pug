@@ -24,11 +24,14 @@ html
                                     i(class="fa-brands fa-discord mt-auto mb-auto")
                                     p(class="ms-1 mt-auto mb-auto") discordUsername#1234
                                 span(class="d-flex")
+                                    i(class="fa-solid fa-location-dot mt-auto mb-auto")
+                                    input(class="form-control form-control-sm mt-1 ms-1" type="text" placeholder="Location" name="location" maxlength="30" value=user.location)                                
+                                span(class="d-flex")
                                     i(class="fa-brands fa-twitter mt-auto mb-auto")
-                                    input(class="form-control form-control-sm mt-1 ms-1" type="text" placeholder="Twitter username" name="twitter" value=user.twitter)
+                                    input(class="form-control form-control-sm mt-1 ms-1" type="text" placeholder="Twitter username" name="twitter" maxlength="16" value=user.twitter)
                                 span(class="d-flex")
                                     i(class="fa-solid fa-link mt-auto mb-auto")
-                                    input(class="form-control form-control-sm mt-1 ms-1" type="text" placeholder="https://" name="website" value=user.website)
+                                    input(class="form-control form-control-sm mt-1 ms-1" type="text" placeholder="https://" name="website" maxlength="30" value=user.website)
                     div(class="col-lg-6 mb-4 w-75")
                         div(class=bg + "card mt-5 mx-auto w-100 p-2")
                             h5(class=bg + "card-header") User
@@ -51,5 +54,5 @@ html
                                 p(class='mt-auto mb-auto me-auto') About  
                                 a(href="/user/"+user.username class="ms-auto btn btn-danger") Cancel
                                 button(type="submit" class="ms-2 btn btn-primary") Save
-                            textarea(class="form-control mt-4" id="bio" rows="3" name="bio") #{user.bio}
+                            textarea(class="form-control mt-4" id="bio" rows="3" name="bio" maxlength="250") #{user.bio}
         include include/footer.pug

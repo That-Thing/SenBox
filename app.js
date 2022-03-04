@@ -224,11 +224,12 @@ app.get('/user/:user/edit', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
-app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).not().isEmpty().trim().escape(), body('twitter').optional({checkFalsy: true}).trim().escape(), body('website').optional({checkFalsy: true}).trim().isURL(), function(req, res) { 
+app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().escape().isLength({max:250}), body('twitter').optional({checkFalsy: true}).trim().escape().isLength({ max:16 }), body('website').optional({checkFalsy: true}).trim().isURL().isLength({ max:30 }), body('location').trim().escape().isLength({ max:30 }).optional({checkFalsy: true}), function(req, res) { 
   if (req.session.loggedin == true) {
     let user = req.params['user'];
     let bio = req.body.bio;
     let twitter = req.body.twitter;
+    let location = req.body.location;
     if(twitter) {
       twitter = twitter.replace("@","")
     }
@@ -243,7 +244,7 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).not().is
       return res.status(400).json({ errors: errors.array() });
     }
     if (RegExp('^[a-zA-Z0-9_.-]*$').test(user) == true && req.session.username == user) {
-      connection.query(`UPDATE accounts SET bio='${bio}', twitter='${twitter}', website=${website == "" ? null:"'"+website+"'"}`, (err, rows) => {
+      connection.query(`UPDATE accounts SET bio='${bio}', twitter='${twitter}', website=${website == "" ? null:"'"+website+"'"}, location='${location}'`, (err, rows) => {
         if (err) throw err;
         res.status(200).redirect("/user/"+user);
       })
@@ -303,7 +304,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
         if(inv != null) { //Allows the SQL query to insert NULL properly. 
           inv = `'${inv}'`
         }
-        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL)`, (err, rows) => {
+        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL)`, (err, rows) => {
           if (err) throw err
         })
         req.session.toast = ["#6272a4","Account created"];
