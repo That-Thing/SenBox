@@ -25,11 +25,17 @@ html
                             if user.twitter
                                 span(class="d-flex")
                                     i(class="fa-brands fa-twitter mt-auto mb-auto")
-                                    a(class="ms-1 mt-auto mb-auto" href="https://twitter.com/twitterUsername") @twitterUsername   
+                                    a(class="ms-1 mt-auto mb-auto" href="https://twitter.com/"+user.twitter) @#{user.twitter}   
                             if user.website
                                 span(class="d-flex")
                                     i(class="fa-solid fa-link mt-auto mb-auto")
-                                    a(class="ms-1 mt-auto mb-auto" href="https://sen.cat" target="_blank") sen.cat                          
+                                    - var url = user.website
+                                    if url.startsWith("https://")
+                                        a(class="ms-1 mt-auto mb-auto" href=user.website target="_blank") #{url.substring(8)}
+                                    else if url.startsWith("http://")
+                                        a(class="ms-1 mt-auto mb-auto" href=user.website target="_blank") #{url.substring(7)}
+                                    else 
+                                        a(class="ms-1 mt-auto mb-auto" href=user.website target="_blank") #{url}
                 div(class="col-lg-6 mb-4 w-75")
                     div(class=bg + "card mt-5 mx-auto w-100 p-2")
                         h5(class=bg + "card-header") User
