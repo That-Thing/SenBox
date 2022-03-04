@@ -224,7 +224,7 @@ app.get('/user/:user/edit', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
-app.post('/user/:user/update', body('bio').not().isEmpty().trim().escape(), body('twitter').trim().escape(), body('website').trim().isURL(), function(req, res) { 
+app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).not().isEmpty().trim().escape(), body('twitter').optional({checkFalsy: true}).trim().escape(), body('website').optional({checkFalsy: true}).trim().isURL(), function(req, res) { 
   if (req.session.loggedin == true) {
     let user = req.params['user'];
     let bio = req.body.bio;
@@ -234,14 +234,16 @@ app.post('/user/:user/update', body('bio').not().isEmpty().trim().escape(), body
     }
     let website = req.body.website
     if(website.startsWith("http://") == false || website.startsWith("https://") == false) {
-      website = "https://"+website
+      if(website != "") {
+        website = "https://"+website;
+      }
     }
     const errors = validationResult(req);
     if (!errors.isEmpty()) { //Return validator errors
       return res.status(400).json({ errors: errors.array() });
     }
     if (RegExp('^[a-zA-Z0-9_.-]*$').test(user) == true && req.session.username == user) {
-      connection.query(`UPDATE accounts SET bio='${bio}', twitter='${twitter}', website='${website}'`, (err, rows) => {
+      connection.query(`UPDATE accounts SET bio='${bio}', twitter='${twitter}', website=${website == "" ? null:"'"+website+"'"}`, (err, rows) => {
         if (err) throw err;
         res.status(200).redirect("/user/"+user);
       })

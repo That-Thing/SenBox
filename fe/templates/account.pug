@@ -50,7 +50,8 @@ html
                                     h4(class="mb-0 mt-0") #{user.username}
                                     h4(class="uid mb-0 mt-0") ##{user.id} 
                         h5(class=bg + "card-header d-flex")
-                            p(class='mt-auto mb-auto') About  
-                            a(href="/user/"+user.username+"/edit" class="ms-auto btn btn-primary") Edit profile
+                            p(class='mt-auto mb-auto') About
+                            if user.username == session.username
+                                a(href="/user/"+user.username+"/edit" class="ms-auto btn btn-primary") Edit profile
                         p #{user.bio}
         include include/footer.pug
