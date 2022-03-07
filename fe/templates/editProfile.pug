@@ -2,6 +2,8 @@ doctype html
 html
     head
         include include/head.pug
+        link(rel="stylesheet" href="/js/croppie/croppie.css")
+        script(src="/js/croppie/croppie.js")
         link(href="/styles/home.css" rel="stylesheet" type="text/css")
         title #{user.username}
     body(class=theme)
@@ -36,10 +38,24 @@ html
                         div(class=bg + "card mt-5 mx-auto w-100 p-2")
                             h5(class=bg + "card-header") User
                             if user.banner
-                                -var bannerDiv = "background-image: url(;" + user.banner + ");"
+                                -var bannerDiv = "background-image: url('" + user.banner + "');"
                             else
                                 -var bannerDiv = "background: #404040;"
                             div(class="rounded p-4 user-background edit-banner" style=bannerDiv)
+                                div(class="modal" tabindex="-1" role="dialog" id="banner-change-modal")
+                                    div(class="modal-dialog" role="document" style="min-width: 700px")
+                                        div(class=bg + "modal-content")
+                                            div(class="modal-header")
+                                                h5(class="modal-title") Change banner
+                                                button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                                    span(aria-hidden="true") &times;
+                                            div(class="modal-body")
+                                                div(class="row")
+                                                    div(class="col-md-12 text-center")
+                                                        div(id="banner-crop-display")
+                                            div(class="modal-footer")
+                                                button(type="button" class="btn btn-danger" data-dismiss="modal") Cancel
+                                                button(type="button" class="btn btn-primary crop_image") Save
                                 input(type="file" accept="image/*" style="display: none;" id="banner-input")
                                 button(type="button" class="ms-auto btn btn-secondary float-end change-banner-button" onclick="document.getElementById('banner-input').click()") Change banner
                                 div(class="d-flex")
@@ -56,3 +72,4 @@ html
                                 button(type="submit" class="ms-2 btn btn-primary") Save
                             textarea(class="form-control mt-4" id="bio" rows="3" name="bio" maxlength="250") #{user.bio}
         include include/footer.pug
+        script(src="/js/crop.js")

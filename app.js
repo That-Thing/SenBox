@@ -256,8 +256,17 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().e
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
-
-
+app.post("/api/banner", (req, res) => {
+  if (req.session.loggedin == false) { //Check if user is logged in
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+  if (!req.file) { //Check if files are present
+    return res.status(400).send(errors['missingFiles']);
+  }
+  let banner = req.file;
+  
+})
 
 //register account
 app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(),(req, res) => {
@@ -357,7 +366,6 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
     return res.status(400).send(errors['missingFiles']);
   }
   let files = req.files;
-  let body = req.body;
   returnFiles = new Array();
   files.forEach(file => {
     let hash = md5File.sync(file.path); //Get MD5 hash of file

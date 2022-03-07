@@ -44,7 +44,7 @@ html
                     div(class=bg + "card mt-5 mx-auto w-100 p-2")
                         h5(class=bg + "card-header") User
                         if user.banner
-                            -var bannerDiv = "background-image: url(;" + user.banner + ");"
+                            -var bannerDiv = "background-image: url('" + user.banner + "');"
                         else
                             -var bannerDiv = "background: #404040;"
                         div(class="rounded p-4 user-background" style=bannerDiv)
