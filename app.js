@@ -10,6 +10,7 @@ const multer = require('multer');
 const os = require('os');
 const md5File = require('md5-file')
 var cookies = require("cookie-parser");
+var sizeOf = require('image-size');
 const { body, validationResult } = require('express-validator');
 app.use(cookies());
 app.use(session({
@@ -256,7 +257,7 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().e
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
-app.post("/api/banner", (req, res) => {
+app.post("/banner/upload", (req, res) => {
   if (req.session.loggedin == false) { //Check if user is logged in
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
@@ -265,7 +266,14 @@ app.post("/api/banner", (req, res) => {
     return res.status(400).send(errors['missingFiles']);
   }
   let banner = req.file;
-  
+  let dimensions = sizeOf(banner.path);
+  if (dimensions.width != 950 || dimensions.height != 200) { //Check if files are the correct size
+    return res.status(400).send(errors['invalidDimensions']);
+  }
+  connection.query(`UPDATE accounts SET banner=${banner.path}`, function(err, rows) {
+    if (err) throw err;
+    res.status(200).redirect(`/user/${req.session.username}/edit`);
+  });
 })
 
 //register account

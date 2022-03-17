@@ -31,7 +31,9 @@ a:hover {
 .dz-drag-hover {
     border: 2px solid #ff79c6;
 }
-
+.fit-content {
+    width: fit-content;
+}
 
 footer {
     border-top: 1px solid rgba(0,0,0,.125)

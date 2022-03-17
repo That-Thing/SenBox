@@ -1,12 +1,12 @@
 var image_crop = $('#banner-crop-display').croppie({
     viewport: {
         width: 900,
-        height: 300,
+        height: 200,
         type:'square'
     },
     boundary:{
-        width: 650,
-        height: 350
+        width: 950,
+        height: 250
     }
 });
 $('#banner-input').on('change', function(){
@@ -23,7 +23,7 @@ $('.crop_image').click(function(event){
     var formData = new FormData();
     image_crop.croppie('result', {type: 'blob', format: 'png'}).then(function(blob) {
         formData.append('cropped_image', blob);
-        ajaxFormPost(formData, '/banner'); /// Calling my ajax function with my blob data passed to it
+        ajaxFormPost(formData, '/banner/upload');
     });
     $('#banner-change-modal').modal('hide');
 });
