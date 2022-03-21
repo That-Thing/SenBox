@@ -1,6 +1,6 @@
 var image_crop = $('#banner-crop-display').croppie({
     viewport: {
-        width: 150,
+        width: 950,
         height: 200,
         type:'square'
     },
