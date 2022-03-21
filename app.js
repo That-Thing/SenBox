@@ -273,7 +273,6 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().e
   }
 })
 app.post("/banner/upload", (req, res) => {
-  console.log("Banner being uploaded");
   if (req.session.loggedin == false) { //Check if user is logged in
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
@@ -281,7 +280,6 @@ app.post("/banner/upload", (req, res) => {
   if (req.body.payload) { //Check if file is present
     var bannerData = decodeBase64Image(req.body.payload);
     let dimensions = sizeOf(Buffer.from(bannerData.data, 'base64'));
-    console.log(dimensions);
     if (dimensions.width == 950 && dimensions.height == 200) { //Check if files are the correct size
       fs.writeFile(`./${config['upload']['banner-path']}/${req.session.uid}.png`, bannerData.data, function(err) { 
         if(err) {
@@ -291,7 +289,6 @@ app.post("/banner/upload", (req, res) => {
       });
       connection.query(`UPDATE accounts SET banner='/${config['upload']['banner-path']}/${req.session.uid}.png'`, function(err, rows) {
         if (err) throw err;
-        console.log("Banner updated");
         res.status(200);
       });
     } else {

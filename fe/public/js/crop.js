@@ -1,6 +1,6 @@
 var image_crop = $('#banner-crop-display').croppie({
     viewport: {
-        width: 950,
+        width: 150,
         height: 200,
         type:'square'
     },
@@ -22,13 +22,12 @@ $('#banner-input').on('change', function(){
 $('.crop_image').click(function(event){
     image_crop.croppie('result', {type: 'base64', format: 'png'}).then(function(img) {
         $.post('/banner/upload', {payload: img}, function(result) {
-            alert( "success" );
-        }).done(function() {
-            alert( "second success" );
         }).fail(function(err) {
             console.log(err);
             $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
         });
+        $('#banner').attr('style', 'background-image: url("'+img+'");');
+        $.toast({text: 'Banner changed successfully', loader: false, bgColor:"#6272a4"}) 
     });
     $('#banner-change-modal').modal('hide');
 });
