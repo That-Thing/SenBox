@@ -2,7 +2,8 @@
     "server": {
         "port": 3000,
         "salt": "password",
-        "errors": "errors_en.json"
+        "errors": "errors_en.json",
+        "request_size_limit": "50mb"
     },
     "database": {
         "host":"localhost",
@@ -17,6 +18,10 @@
     },
     "upload": {
         "path": "files",
+        "banner-path": "files/user/banner",
+        "banner-size": 10,
+        "avatar-path": "files/user/avatar",
+        "avatar-size": 10,
         "max-file-size": "1",
         "banned-mimes": ["application/zip", "application/x-zip-compressed","application/exe"]
     },

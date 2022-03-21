@@ -1,10 +1,19 @@
 const express = require('express');
 //Initialize app
 const app = express();
+app.use(express.json());
+//Load config
+const fs = require('fs'); //filesync
+let config = JSON.parse(fs.readFileSync('config.json'));
+function reloadConfig() {
+  config = JSON.parse(fs.readFileSync('config.json'));
+  return config;
+}
+app.use(express.json({limit: config['server']['request_size_limit'], extended: true}));
+app.use(express.urlencoded({limit: config['server']['request_size_limit'], extended: true, parameterLimit:50000}));
 //other stuff
 const session = require('express-session');
 const path = require('path');
-const fs = require('fs'); //filesync
 const crypto = require("crypto");
 const multer = require('multer');
 const os = require('os');
@@ -18,20 +27,12 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'static')));
 app.set('view engine', 'pug') //Use pug for templates. 
 app.set('views', './fe/templates'); //Set template directory
 app.use(express.static(__dirname + '/fe/public')); //Set static file directory
 app.use('/files', express.static(__dirname + '/files'));
-//Load config
-let config = JSON.parse(fs.readFileSync('config.json'));
-
-function reloadConfig() {
-  config = JSON.parse(fs.readFileSync('config.json'));
-  return config;
-}
 //Load errors
 let errors = JSON.parse(fs.readFileSync(config['server']['errors']));
 //Load database connection info from config
@@ -88,6 +89,20 @@ app.use(setSession);
 function convertBytes(bytes) {
   return (bytes / (1024*1024)).toFixed(2);
 }
+//Decode base64 string
+function decodeBase64Image(dataString) {
+  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+    response = {};
+  if (matches.length !== 3) {
+    return new Error('Invalid input string');
+  }
+  response.type = matches[1];
+  response.data = new Buffer.from(matches[2], 'base64');
+  return response;
+}
+
+
+
 //Terms of Service and Privacy Policy
 app.get('/tos', function(req, res) {
   if (req.session.loggedin == true) {
@@ -258,22 +273,33 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().e
   }
 })
 app.post("/banner/upload", (req, res) => {
+  console.log("Banner being uploaded");
   if (req.session.loggedin == false) { //Check if user is logged in
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
-  if (!req.file) { //Check if files are present
+  if (req.body.payload) { //Check if file is present
+    var bannerData = decodeBase64Image(req.body.payload);
+    let dimensions = sizeOf(Buffer.from(bannerData.data, 'base64'));
+    console.log(dimensions);
+    if (dimensions.width == 950 && dimensions.height == 200) { //Check if files are the correct size
+      fs.writeFile(`./${config['upload']['banner-path']}/${req.session.uid}.png`, bannerData.data, function(err) { 
+        if(err) {
+          console.log(err);
+          return res.status(500).send(errors['fileWriteError']);
+        }
+      });
+      connection.query(`UPDATE accounts SET banner='/${config['upload']['banner-path']}/${req.session.uid}.png'`, function(err, rows) {
+        if (err) throw err;
+        console.log("Banner updated");
+        res.status(200);
+      });
+    } else {
+      return res.status(400).send(errors['invalidDimensions']);
+    }
+  } else {
     return res.status(400).send(errors['missingFiles']);
   }
-  let banner = req.file;
-  let dimensions = sizeOf(banner.path);
-  if (dimensions.width != 950 || dimensions.height != 200) { //Check if files are the correct size
-    return res.status(400).send(errors['invalidDimensions']);
-  }
-  connection.query(`UPDATE accounts SET banner=${banner.path}`, function(err, rows) {
-    if (err) throw err;
-    res.status(200).redirect(`/user/${req.session.username}/edit`);
-  });
 })
 
 //register account

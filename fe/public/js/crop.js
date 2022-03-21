@@ -1,11 +1,11 @@
 var image_crop = $('#banner-crop-display').croppie({
     viewport: {
-        width: 900,
+        width: 950,
         height: 200,
         type:'square'
     },
     boundary:{
-        width: 950,
+        width: 1000,
         height: 250
     }
 });
@@ -20,34 +20,15 @@ $('#banner-input').on('change', function(){
     $('#banner-change-modal').modal('show');
 });
 $('.crop_image').click(function(event){
-    var formData = new FormData();
-    image_crop.croppie('result', {type: 'blob', format: 'png'}).then(function(blob) {
-        formData.append('cropped_image', blob);
-        ajaxFormPost(formData, '/banner/upload');
+    image_crop.croppie('result', {type: 'base64', format: 'png'}).then(function(img) {
+        $.post('/banner/upload', {payload: img}, function(result) {
+            alert( "success" );
+        }).done(function() {
+            alert( "second success" );
+        }).fail(function(err) {
+            console.log(err);
+            $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
+        });
     });
     $('#banner-change-modal').modal('hide');
 });
-function ajaxFormPost(formData, actionURL){
-    $.ajax({
-        url: actionURL,
-        type: 'POST',
-        data: formData,
-        cache: false,
-        async: true,
-        processData: false,
-        contentType: false,
-        timeout: 5000,
-        beforeSend: function(){
-        },
-        success: function(response) {
-            if (response['status'] === 'success') {
-                $('#banner-input').val("");
-                $('#uploaded-image').attr('style', `background-image: url(${response['url']});`);
-            } else {
-                console.log(response['message']);
-            }
-        },
-        complete: function(){
-        }
-    });
-}

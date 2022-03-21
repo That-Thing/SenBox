@@ -41,7 +41,7 @@ html
                                 -var bannerDiv = "background-image: url('" + user.banner + "');"
                             else
                                 -var bannerDiv = "background: #404040;"
-                            div(class="rounded p-4 user-background edit-banner" style=bannerDiv)
+                            div(class="rounded p-4 user-background edit-banner" id="banner" style=bannerDiv)
                                 div(class="modal" tabindex="-1" role="dialog" id="banner-change-modal")
                                     div(class="modal-dialog" role="document" style="min-width: 700px")
                                         div(class=bg + "modal-content fit-content")

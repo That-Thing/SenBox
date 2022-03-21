@@ -1,2 +1,3 @@
 files/*
 node_modules/.bin/md5-file
+node_modules/.bin/image-size
