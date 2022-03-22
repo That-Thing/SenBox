@@ -3,6 +3,7 @@ html
     head
         include include/head.pug
         link(href="styles/home.css" rel="stylesheet" type="text/css")
+        script(src="/js/gallery.js")
         title Paste
     body(class=theme)
         include include/nav.pug
@@ -12,27 +13,48 @@ html
                     div(class=bg + "card mt-5 mx-auto")
                         h5(class=bg + "card-header") Controls
                         div(class="card-body")
-                            form(action="/filter" method="GET")
+                            form(action="/gallery" method="GET")
                                 input(class="form-control" type="text" placeholder="Filename or display name" name="filter")
                                 button(class="btn btn-primary btn-block mt-2") 
                                     i(class="fas fa-search") 
                                     span(class="ms-1") Search
                             label(for="order-by" class="mt-1") Order by
                             select(class="form-control" id="order-by")
-                                option(value="new-old") Upload date (new-old)
-                                option(value="old-new") Upload date (old-new)
-                                option(value="name") Name (A-Z)
-                                option(value="name-desc") Name (Z-A)
-                                option(value="type") File type
-                                option(value="size") Size (small-large)
-                                option(value="size-desc") Size (large-small)
+                                if sort == "new-old"
+                                    option(value="new-old" selected) Upload date (new-old)
+                                else
+                                    option(value="new-old") Upload date (new-old)
+                                if sort == "old-new"
+                                    option(value="old-new" selected) Upload date (old-new)
+                                else
+                                    option(value="old-new") Upload date (old-new)
+                                if sort == "name"
+                                    option(value="name" selected) Name (A-Z)
+                                else
+                                    option(value="name") Name (A-Z)
+                                if sort == "name-desc"
+                                    option(value="name-desc" selected) Name (Z-A)
+                                else
+                                    option(value="name-desc") Name (Z-A)
+                                if sort == "type"
+                                    option(value="type" selected) File type
+                                else
+                                    option(value="type") File type
+                                if sort == "size"
+                                    option(value="size" selected) Size (small-large)
+                                else
+                                    option(value="size") Size (small-large)
+                                if sort == "size-desc"
+                                    option(value="size-desc" selected) Size (large-small)
+                                else
+                                    option(value="size-desc") Size (large-small)
 
                         </select>
                 div(class="col-lg-6 mb-4 w-75") 
                     div(class=bg + "card mt-5 mx-auto table-responsive upload-table w-100")
                         h5(class=bg + "card-header") Gallery
                         div(class="card-body")
-                        for file in files
+                        for file in files.slice(0, limit)
                             if file.mime.split('/')[0] == 'image'
                                 img(class="gallery-image m-3" src="files/"+file.name height="150")
                             else

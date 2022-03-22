@@ -17,7 +17,8 @@ const path = require('path');
 const crypto = require("crypto");
 const multer = require('multer');
 const os = require('os');
-const md5File = require('md5-file')
+const md5File = require('md5-file');
+const url = require('url');
 var cookies = require("cookie-parser");
 var sizeOf = require('image-size');
 const { body, validationResult } = require('express-validator');
@@ -187,12 +188,39 @@ app.get('/paste', function(req, res) {
 //Gallery page
 app.get('/gallery', function(req, res) {
   if (req.session.loggedin == true) {
-    let files = [];
-    connection.query(`SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY date DESC`, (err, rows) => {
+    let queryUrl = url.parse(req.url, true).query;
+    console.log(queryUrl);
+    let files = []; //Initiate files array
+    let limit = 15; //Default limit
+    let sort = "new-old"; //Default sort
+    let name = queryUrl.filter; //Initiate name
+    if (queryUrl.limit) { //Get display limit
+      limit = queryUrl.limit;
+    }
+    let queries = {
+      "new-old": `SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY date DESC`,
+      "old-new": `SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY date ASC`,
+      "name-desc": `SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY name DESC`,
+      "name": `SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY name ASC`,
+      "type": `SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY mime DESC`,
+      "size-desc": `SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY size DESC`,
+      "size": `SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY size ASC`,
+      "filter": `SELECT * FROM files WHERE owner=${req.session.uid} AND (name LIKE '%${name}%' OR filename LIKE '%${name}%')  ORDER BY name ASC`
+    };
+    let query = queries[sort]; //Initiate query
+    if (queryUrl.sort) { //Sort by date, name, size, or type
+      query = queries[sort];
+    }
+    if (queryUrl.filter) { //Name filter
+      query = queries["filter"];
+    }
+    console.log(sort);
+    console.log(query);
+    connection.query(query, (err, rows) => {
       if (err) throw err;
       files = rows;
-      console.log(files);
-      res.status(200).render('gallery', {config: reloadConfig(), files: files, session:req.session, appTheme: req.cookies.theme, path: "gallery"})
+      //console.log(files);
+      res.status(200).render('gallery', {config: reloadConfig(), files: files.slice(0, limit), sort, session:req.session, appTheme: req.cookies.theme, path: "gallery"})
     })
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
@@ -409,6 +437,33 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
 
 });
 
+
+app.post('/paste', function(req, res) {
+  if (req.session.loggedin == false) { //Check if user is logged in
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+  let title = req.body.title;
+  let content = req.body.content;
+  let burn = req.body.burn;
+  let syntax = req.body.syntax;
+  if(!title) {
+    title = "Untitled";
+  }
+  if(!content) {
+    res.status(406).json(errors['missingContent']);
+    return;
+  }
+  if(!burn) {
+    burn = 0;
+  }
+  let r = /[^A-Za-z0-9]/g;
+  let id = crypto.createHash('sha256').update(title+content+req.session.uid+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
+  connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}))`, function(err, rows) {
+    if (err) throw err;
+  });
+
+})
 
 app.listen(config['server']['port'], () => {
   console.log(`App started on port ${config['server']['port']}`)
