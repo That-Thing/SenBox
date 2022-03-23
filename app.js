@@ -220,7 +220,7 @@ app.get('/gallery', function(req, res) {
       if (err) throw err;
       files = rows;
       //console.log(files);
-      res.status(200).render('gallery', {config: reloadConfig(), files: files.slice(0, limit), sort, session:req.session, appTheme: req.cookies.theme, path: "gallery"})
+      res.status(200).render('gallery', {config: reloadConfig(), files: files.slice(0, limit), sort, session:req.session, appTheme: req.cookies.theme, path: "gallery", currentPath: req.path})
     })
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
