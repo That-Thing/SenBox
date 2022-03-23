@@ -238,7 +238,7 @@ app.get('/user/:user', function(req, res) {
           res.sendStatus(404);
         }
         var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
-        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date});
+        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date, path: "account"});
       })
     } else {
       res.status(406).json(errors['invalidUsername']);
@@ -258,7 +258,7 @@ app.get('/user/:user/edit', function(req, res) {
           res.sendStatus(404);
         }
         var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
-        res.status(200).render('editProfile', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date});
+        res.status(200).render('editProfile', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date, path: "account"});
       })
     } else {
       res.status(406).json(errors['invalidUsername']);
@@ -278,7 +278,7 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().e
       twitter = twitter.replace("@","")
     }
     let website = req.body.website
-    if(website.startsWith("http://") == false || website.startsWith("https://") == false) {
+    if(website.startsWith("http://") == false && website.startsWith("https://") == false) {
       if(website != "") {
         website = "https://"+website;
       }
