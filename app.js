@@ -19,6 +19,7 @@ const multer = require('multer');
 const os = require('os');
 const md5File = require('md5-file');
 const url = require('url');
+const decode = require('unescape');
 var cookies = require("cookie-parser");
 var sizeOf = require('image-size');
 const { body, validationResult } = require('express-validator');
@@ -226,6 +227,16 @@ app.get('/gallery', function(req, res) {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
+})
+
+//Paste page
+app.get('/pastes/:id', function(req, res) {
+  let id = req.params.id;
+  connection.query(`SELECT * FROM pastes WHERE id='${id}'`, (err, rows) => {
+    if (err) throw err;
+    let paste = rows[0];
+    res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']),path: "paste"})
+  })
 })
 
 //User account page
@@ -437,32 +448,32 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
 
 });
 
-
-app.post('/paste', function(req, res) {
-  if (req.session.loggedin == false) { //Check if user is logged in
+app.post('/paste', body("content").escape(), body("title").optional({checkFalsy: true}).trim().escape(), function(req, res) {
+  if (req.session.loggedin == true) { //Check if user is logged in
+    let title = req.body.title;
+    let content = req.body.content;
+    let burn = req.body.burn;
+    let syntax = req.body.syntax;
+    if(!title) {
+      title = "Untitled";
+    }
+    if(!content) {
+      res.status(406).json(errors['missingContent']);
+      return;
+    }
+    if(!burn) {
+      burn = 0;
+    }
+    let r = /[^A-Za-z0-9]/g;
+    let id = crypto.createHash('sha256').update(title+content+req.session.uid+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
+    connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()})`, function(err, rows) {
+      if (err) throw err;
+      res.status(200).redirect("/pastes/"+id);
+    });
+  } else {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
-  let title = req.body.title;
-  let content = req.body.content;
-  let burn = req.body.burn;
-  let syntax = req.body.syntax;
-  if(!title) {
-    title = "Untitled";
-  }
-  if(!content) {
-    res.status(406).json(errors['missingContent']);
-    return;
-  }
-  if(!burn) {
-    burn = 0;
-  }
-  let r = /[^A-Za-z0-9]/g;
-  let id = crypto.createHash('sha256').update(title+content+req.session.uid+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
-  connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}))`, function(err, rows) {
-    if (err) throw err;
-  });
-
 })
 
 app.listen(config['server']['port'], () => {

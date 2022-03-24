@@ -8,7 +8,8 @@
     "md5-file": "^5.0.0",
     "multer": "^1.4.4",
     "mysql": "^2.18.1",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "unescape": "^1.0.1"
   },
   "name": "senbox",
   "version": "0.0.1",
