@@ -5,23 +5,21 @@ html
         link(rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css")
         script(src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js")
         link(href="/styles/home.css" rel="stylesheet" type="text/css")
-        link(href="/styles/dark.css" rel="stylesheet" type="text/css")
+        link(href="/styles/edge-dark.css" rel="stylesheet" type="text/css")
         script hljs.highlightAll();
         title Paste
     body(class=theme)
         div(class="container")
-            div(class=bg + "card mt-5 mx-auto w-75")
+            div(class=bg + "card mt-5 mx-auto w-75 mb-3")
                 h1(class=bg + "card-header") #{paste['title']}
                 div(class="card-body")
-                    - content = content.replace(/&#x27;/g, "'")
                     if paste['syntax'] == 'none'
                         pre
                             code(class="nohighlight") #{content}
-                    else if paste['syntax'] == 'automatic'
+                    else if paste['syntax'] == 'auto'
                         pre
                             code #{content}
                     else 
                         pre
                             code(class="language-"+paste['syntax']) #{content}
                     end
-        include include/footer.pug

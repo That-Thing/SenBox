@@ -234,8 +234,12 @@ app.get('/pastes/:id', function(req, res) {
   let id = req.params.id;
   connection.query(`SELECT * FROM pastes WHERE id='${id}'`, (err, rows) => {
     if (err) throw err;
-    let paste = rows[0];
-    res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']),path: "paste"})
+    if (rows.length < 0) {
+      let paste = rows[0];
+      res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'"),path: "paste"})
+    } else {
+      res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+    }
   })
 })
 
