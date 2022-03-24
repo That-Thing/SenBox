@@ -30,10 +30,11 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `joinDate` bigint(20) DEFAULT NULL,
   `ip` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `banner` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `avatar` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User avatar',
+  `avatar` text COLLATE utf8mb4_unicode_ci DEFAULT '/images/default.png' COMMENT 'User avatar',
   `bio` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `twitter` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `website` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -61,6 +62,19 @@ CREATE TABLE IF NOT EXISTS `invites` (
   `uses` int(11) NOT NULL DEFAULT 0,
   `date` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table senbox.pastes
+CREATE TABLE IF NOT EXISTS `pastes` (
+  `id` text NOT NULL,
+  `owner` int(11) NOT NULL DEFAULT 0,
+  `title` text NOT NULL,
+  `content` longtext NOT NULL,
+  `burn` tinyint(4) NOT NULL DEFAULT 0,
+  `syntax` text DEFAULT NULL,
+  `date` bigint(20) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Data exporting was unselected.
 
