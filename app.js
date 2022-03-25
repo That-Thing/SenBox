@@ -242,6 +242,18 @@ app.get('/pastes/:id', function(req, res) {
     }
   })
 })
+app.get('/pastes/raw/:id', function(req, res) { 
+  let id = req.params.id;
+  connection.query(`SELECT * FROM pastes WHERE id='${id}'`, (err, rows) => {
+    if (err) throw err;
+    if (rows.length > 0) {
+      let paste = rows[0];
+      res.status(200).send(`<pre>${decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'")}</pre>`)
+    } else {
+      res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+    }
+  })
+})
 
 //User account page
 app.get('/user/:user', function(req, res) {
