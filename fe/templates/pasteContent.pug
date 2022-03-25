@@ -4,10 +4,11 @@ html
         include include/head.pug
         link(rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css")
         script(src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js")
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
         link(href="/styles/home.css" rel="stylesheet" type="text/css")
         link(href="/styles/edge-dark.css" rel="stylesheet" type="text/css")
-        script hljs.highlightAll();
-        title Paste
+        script hljs.highlightAll(); hljs.initLineNumbersOnLoad();
+        title #{paste['title']}
     body(class=theme)
         div(class="container")
             div(class=bg + "card mt-5 mx-auto w-75 mb-3")

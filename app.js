@@ -234,7 +234,7 @@ app.get('/pastes/:id', function(req, res) {
   let id = req.params.id;
   connection.query(`SELECT * FROM pastes WHERE id='${id}'`, (err, rows) => {
     if (err) throw err;
-    if (rows.length < 0) {
+    if (rows.length > 0) {
       let paste = rows[0];
       res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'"),path: "paste"})
     } else {
@@ -403,7 +403,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
   }
 })
 //log in
-app.post('/auth', function(req, res) {
+app.post('/auth', body('username').not().isEmpty().trim().escape(), function(req, res) {
 	let username = req.body.username;
 	let password = req.body.password;
   if (RegExp('^[a-zA-Z0-9@_.-]*$').test(username) == true) { //Username and email regex. 
