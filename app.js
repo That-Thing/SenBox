@@ -464,7 +464,7 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
 
 });
 
-app.post('/paste', body("content").escape(), body("title").optional({checkFalsy: true}).trim().escape(), function(req, res) {
+app.post('/paste', body("content").escape(), body("title").optional({checkFalsy: true}).trim().escape(), body("syntax").optional({checkFalsy: true}).trim().escape(), function(req, res) {
   if (req.session.loggedin == true) { //Check if user is logged in
     let title = req.body.title;
     let content = req.body.content;
@@ -480,11 +480,14 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
     if(!burn) {
       burn = 0;
     }
+    if(!syntax) {
+      syntax = 'none'
+    }
     let r = /[^A-Za-z0-9]/g;
     let id = crypto.createHash('sha256').update(title+content+req.session.uid+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
     connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()})`, function(err, rows) {
       if (err) throw err;
-      res.status(200).redirect("/pastes/"+id);
+      res.status(200).json({"url":"/pastes/"+id});
     });
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
