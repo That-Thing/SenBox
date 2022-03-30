@@ -8,6 +8,19 @@ html
     body(class=theme)
         include include/nav.pug
         div(class="container")
+            div(class="modal" tabindex="-1" role="dialog" id="paste-modal")
+                div(class="modal-dialog" role="document" style="min-width: 700px")
+                    div(class=bg + "modal-content fit-content ms-auto me-auto")
+                        div(class="modal-header")
+                            h5(class="modal-title") Paste Created
+                        div(class="modal-body")
+                            div(class="row")
+                                div(class="col-md-12")
+                                    pre(class="p-3 mt-2 mb-2")
+                                        code(class="p-3 rounded text-muted" id="paste-url")
+                                    span Click to copy to clipboard
+                        div(class="modal-footer")
+                            button(type="button" class="btn btn-danger" data-bs-dismiss="modal") Close
             div(class=bg + "card mt-5 mx-auto w-75")
                 h1(class=bg + "card-header") Paste
                 div(class="card-body")
