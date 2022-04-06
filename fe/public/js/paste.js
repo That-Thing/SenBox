@@ -22,7 +22,7 @@ window.onload = function() {
         });
     })
     $("#paste-url").click(function() {
-        navigator.Clipboard.writeText("Test")
+        navigator.clipboard.writeText($("#paste-url").text());
         $.toast({text: "URL copied to clipboard", loader: false, bgColor:"#6272a4"})
     })
 }

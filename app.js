@@ -295,6 +295,22 @@ app.get('/user/:user/edit', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
+app.get("/invites", function(req, res) {
+  if (req.session.loggedin == true) {
+    connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, (err, rows) => {
+      var user = rows[0];
+      connection.query(`SELECT * FROM invites WHERE creator=${req.session.id}`, (err, rows) => {
+        if(!rows) {
+          rows = [];
+        }
+        res.status(200).render('invites', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, invites: rows, user: user, path: "invites"});
+      })
+    })
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
+  }
+}) 
 app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().escape().isLength({max:250}), body('twitter').optional({checkFalsy: true}).trim().escape().isLength({ max:16 }), body('website').optional({checkFalsy: true}).trim().isURL().isLength({ max:30 }), body('location').trim().escape().isLength({ max:30 }).optional({checkFalsy: true}), function(req, res) { 
   if (req.session.loggedin == true) {
     let user = req.params['user'];

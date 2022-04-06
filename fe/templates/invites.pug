@@ -1,0 +1,25 @@
+doctype html 
+html
+    head
+        include include/head.pug
+        title Invites
+    body(class=theme)
+        include include/nav.pug
+        div(class="container")
+            div(class=bg + "card mt-5 mx-auto w-75")
+                h5(class=bg + "card-header") Generate Invite
+                div(class="card-body")
+                    pre(class="p-3 mt-2 mb-2")
+                        code(class="p-3 rounded text-muted" id="geneated-invite")
+                    span Invites left: #{user.invites}
+                button(class="btn btn-primary mt-2" id="generate-invite") Generate Invite
+            div(class=bg + "card mt-5 mx-auto w-75")
+                h5(class=bg + "card-header") Your Invites
+                div(class="card-body")
+                    each invite in invites 
+                        span(class="invite "+ (invite.uses >= invite.maxUses ? "text-muted" : "") id=invite.invite)
+                            span #{invite.id}
+                            span Uses: #{invite.uses}/#{invite.maxUses}
+                    if invites.length == 0
+                        span(class="text-muted") You have no invites
+        include include/footer.pug
