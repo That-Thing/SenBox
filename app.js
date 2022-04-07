@@ -299,7 +299,7 @@ app.get("/invites", function(req, res) {
   if (req.session.loggedin == true) {
     connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, (err, rows) => {
       var user = rows[0];
-      connection.query(`SELECT * FROM invites WHERE creator=${req.session.id}`, (err, rows) => {
+      connection.query(`SELECT * FROM invites WHERE creator=${req.session.uid}`, (err, rows) => {
         if(!rows) {
           rows = [];
         }
@@ -505,6 +505,39 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
       if (err) throw err;
       res.status(200).json({"url":"/pastes/"+id});
     });
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
+app.post('/invites/generate', function(req, res) {
+  if (req.session.loggedin == true) { //Check if user is logged in
+    let maxUses = req.body.maxUses;
+    if(!maxUses) {
+      maxUses = 1;
+    }
+    if(maxUses > 1) {
+      if(req.session.group > 1) {
+        res.status(406).json(errors['noPermission']);
+        return;
+      }
+    }
+    connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, function(err, rows){
+      if (err) throw err;
+      if (rows[0].invites > 0) {
+        let r = /[^A-Za-z0-9]/g;
+        let token = crypto.createHash('sha256').update(req.session.username+req.session.uid+config['server']['salt']+Date.now()).digest('base64').substring(1,25).replace(r, ""); //User Token
+        connection.query(`UPDATE accounts SET invites=invites-1 WHERE id=${req.session.uid}`, function(err, rows) {
+          if (err) throw err;
+        });
+        connection.query(`INSERT INTO invites VALUES ('${token}', ${req.session.uid}, ${maxUses}, 0, ${Date.now()})`, function(err, rows) {
+          if (err) throw err;
+          res.status(200).json({"invite":token});
+        });
+      } else {
+        res.status(406).json({"err": errors['noInvites']});
+      }
+    }) 
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});

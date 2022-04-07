@@ -10,5 +10,7 @@
     "missingContent": "No content was submitted",
     "invalidUsername": "Invalid username",
     "invalidDimensions": "Invalid image dimensions",
-    "fileWriteError": "Could not write file to disk"
+    "fileWriteError": "Could not write file to disk",
+    "noPermission": "Invalid permissions",
+    "noInvites": "No invites available"
 }
