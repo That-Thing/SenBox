@@ -371,7 +371,7 @@ app.post("/banner/upload", (req, res) => {
 })
 
 //register account
-app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(),(req, res) => {
+app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(), body('invite').optional({checkFalsy: true}).trim().escape().isLength({ max:25 }), (req, res) => {
   if (config['settings']['registrations'] != 'on') { //Check if registrations are disabled. Return error if they are. 
     res.json(errors['registrationsDisabled']);
   }

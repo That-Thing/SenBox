@@ -14,7 +14,7 @@
     "settings": {
         "name": "SenBox",
         "registrations": "on",
-        "invites": "off"
+        "invites": "on"
     },
     "upload": {
         "path": "files",
