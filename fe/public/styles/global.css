@@ -34,6 +34,10 @@ a:hover {
 .fit-content {
     width: fit-content;
 }
+.hljs-ln td {
+    padding: 0;
+    padding-right: 10px;
+}
 
 footer {
     border-top: 1px solid rgba(0,0,0,.125)
