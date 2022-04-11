@@ -190,7 +190,6 @@ app.get('/paste', function(req, res) {
 app.get('/gallery', function(req, res) {
   if (req.session.loggedin == true) {
     let queryUrl = url.parse(req.url, true).query;
-    console.log(queryUrl);
     let files = []; //Initiate files array
     let limit = 15; //Default limit
     let sort = "new-old"; //Default sort
@@ -215,12 +214,9 @@ app.get('/gallery', function(req, res) {
     if (queryUrl.filter) { //Name filter
       query = queries["filter"];
     }
-    console.log(sort);
-    console.log(query);
     connection.query(query, (err, rows) => {
       if (err) throw err;
       files = rows;
-      //console.log(files);
       res.status(200).render('gallery', {config: reloadConfig(), files: files.slice(0, limit), sort, session:req.session, appTheme: req.cookies.theme, path: "gallery", currentPath: req.path})
     })
   } else {
@@ -510,7 +506,11 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
-app.post('/invites/generate', function(req, res) {
+app.post('/invites/generate', body("maxUses").optional({checkFalsy: true}).isNumeric().default(1), function(req, res) {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
   if (req.session.loggedin == true) { //Check if user is logged in
     let maxUses = req.body.maxUses;
     if(!maxUses) {
