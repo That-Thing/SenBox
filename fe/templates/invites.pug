@@ -12,13 +12,14 @@ html
                 div(class="card-body")
                     pre(class="p-3 mt-2 mb-2")
                         code(class="p-3 rounded text-muted" id="generated-invite")
-                    input(type="number" id="max-uses" name="max-uses" value="1" maxlength=user.invites style="width: 5%")
-                    label(for="max-uses") Maximum amount of uses
-                    p Invites left: #{user.invites}
+                    label(for="max-uses") Maximum amount of uses: 
+                    input(class="ms-2" type="number" id="max-uses" name="max-uses" value="1" max=user.invites style="width: 5%")
+                    p Invites left: 
+                        span(id="invites-left") #{user.invites}
                 button(class="btn btn-primary mt-2" id="generate-invite") Generate Invite
             div(class=bg + "card mt-5 mx-auto w-75")
                 h5(class=bg + "card-header") Your Invites
-                div(class="card-body")
+                div(class="card-body" id="invite-list")
                     each invite in invites
                         div 
                             span(class="me-2 invite "+ (invite.uses >= invite.maxUses ? "text-muted strikethrough" : "text-success") id=invite.invite) #{invite.invite}

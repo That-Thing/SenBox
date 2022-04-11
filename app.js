@@ -415,7 +415,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
         if(inv != null) { //Allows the SQL query to insert NULL properly. 
           inv = `'${inv}'`
         }
-        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL)`, (err, rows) => {
+        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
           if (err) throw err
         })
         req.session.toast = ["#6272a4","Account created"];
@@ -518,9 +518,11 @@ app.post('/invites/generate', function(req, res) {
     }
     if(maxUses > 1) {
       if(req.session.group > 1) {
-        res.status(406).json(errors['noPermission']);
-        return;
+        maxUses = 1;
       }
+    }
+    if(maxUses == 0) {
+      maxUses = 1;
     }
     connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, function(err, rows){
       if (err) throw err;
@@ -532,7 +534,7 @@ app.post('/invites/generate', function(req, res) {
         });
         connection.query(`INSERT INTO invites VALUES ('${token}', ${req.session.uid}, ${maxUses}, 0, ${Date.now()})`, function(err, rows) {
           if (err) throw err;
-          res.status(200).json({"invite":token});
+          res.status(200).json({"invite":token, "maxUses":maxUses});
         });
       } else {
         res.status(406).json({"err": errors['noInvites']});
