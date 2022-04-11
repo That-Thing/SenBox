@@ -131,7 +131,9 @@ app.get('/register', function(req, res) {
     req.session.toast = ["#6272a4","You are already signed in"];
     res.status(200).render('home', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme})
   } else {
-    res.status(200).render('register', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme});
+    let queryUrl = url.parse(req.url, true).query;
+    let invite = queryUrl.invite;
+    res.status(200).render('register', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, invite:invite});
   }
 });
 //Login page
@@ -161,7 +163,10 @@ app.get('/home', function(req, res) {
       });
       files = rows.slice(0, 4)
       spaceUsed = convertBytes(spaceUsed); //Convert bytes to mb
-      res.status(200).render('home', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, files: files, spaceUsed: spaceUsed, spaceTotal: Math.round(spaceTotal), path: "home"});
+      connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, (err, rows) => {
+        if (err) throw err;
+        res.status(200).render('home', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, files: files, user:rows[0], spaceUsed: spaceUsed, spaceTotal: Math.round(spaceTotal), path: "home"});
+      })
     })
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];

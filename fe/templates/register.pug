@@ -26,7 +26,7 @@ html
                     label(for="password") Password
                 if config['settings']['invites'] == 'on'
                     div(class="form-floating mt-1 auth-input")
-                        input( class="form-control" id="invite" name="invite" placeholder="Invite code" maxlength="50" required)
+                        input( class="form-control" id="invite" name="invite" placeholder="Invite code" maxlength="50" required value=invite != null ? invite : '')
                         label(for="invite") Invite
                 if config['settings']['registrations'] == 'on'
                     button( class="w-100 btn btn-lg btn-primary auth-button mt-3" type="submit") Sign up

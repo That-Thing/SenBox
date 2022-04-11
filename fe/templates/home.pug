@@ -15,9 +15,9 @@ html
                         - var progress = "width: " + Math.round(spaceUsed / spaceTotal * 100) + "%"
                         div(class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style=progress aria-valuenow=spaceUsed aria-valuemin="0" aria-valuemax=spaceTotal)
                     p(class="text-center text-muted") Storage used #{spaceUsed}/#{spaceTotal} MB
-                    p Total files on site: 99999
+                    p Uploaded files: #{files.length}
                     p Invites: 
-                        a(href="/invites" class="text-decoration-none") 5
+                        a(href="/invites" class="text-decoration-none") #{user.invites}
             div(class=bg + "card w-75 mx-auto mt-5 table-responsive upload-table")
                 h5(class="card-header") Latest Uploads 
                 div(class="card-body")
