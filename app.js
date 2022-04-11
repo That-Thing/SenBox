@@ -237,7 +237,7 @@ app.get('/pastes/:id', function(req, res) {
     if (err) throw err;
     if (rows.length > 0) {
       let paste = rows[0];
-      res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'"),path: "paste"})
+      res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
     } else {
       res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
     }
@@ -249,7 +249,7 @@ app.get('/pastes/raw/:id', function(req, res) {
     if (err) throw err;
     if (rows.length > 0) {
       let paste = rows[0];
-      res.status(200).send(`<pre>${decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'")}</pre>`)
+      res.status(200).send(`<pre>${decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\")}</pre>`)
     } else {
       res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
     }
