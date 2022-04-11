@@ -129,7 +129,7 @@ app.get('/privacy', function(req, res) {
 app.get('/register', function(req, res) {
   if (req.session.loggedin == true) {
     req.session.toast = ["#6272a4","You are already signed in"];
-    res.status(200).render('home', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme})
+    res.status(200).redirect('home');
   } else {
     let queryUrl = url.parse(req.url, true).query;
     let invite = queryUrl.invite;
@@ -140,7 +140,7 @@ app.get('/register', function(req, res) {
 app.get('/login', function(req, res) {
   if (req.session.loggedin == true) {
     req.session.toast = ["#6272a4","You are already signed in"];
-    res.status(200).render('home', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme })
+    res.status(200).redirect('home');
   } else {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
