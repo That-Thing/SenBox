@@ -374,7 +374,7 @@ app.post("/banner/upload", (req, res) => {
 //register account
 app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(), body('invite').optional({checkFalsy: true}).trim().escape().isLength({ max:25 }), (req, res) => {
   if (config['settings']['registrations'] != 'on') { //Check if registrations are disabled. Return error if they are. 
-    res.json(errors['registrationsDisabled']);
+    res.send(errors['registrationsDisabled']);
   }
 	let username = req.body.username;
 	let password = req.body.password;
@@ -385,50 +385,53 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
         if (err) throw err;
         if (rows.length > 0) { //Account already exists.  
           if (rows[0].username == username) { //Account with same username exists
-            res.status(406).json(errors['usernameExists']);
-            return;
+            return res.status(406).send(errors['usernameExists']);
           }
           if (rows[0].email == email) { //Account with email exists
-            res.status(406).json(errors['emailExists']);
-            return;
+            return res.status(406).send(errors['emailExists']);
           }
-        }
-        let inv = null; //Initialize invite
-        let invBy = null; //Initialize invited by
-        if (config['server']['invites'] == 'on') { //Check if invites are enabled
-          let invite = req.body.invite;
-          connection.query('SELECT * FROM invites WHERE invite = ?', [invite], (err, rows) => {
-            if (err) throw err
-            if (rows.length == 0) { //Invite doesn't exist
-              res.status(406).json(errors['invalidInvite']);
-              return;
-            }
-            if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
-              res.status(406).json(errors['invalidInvite']);
-              return;
-            }
-            inv = invite; //If all the checks pass, the invite can be used
-            invBy = rows[0].creator; //Sets invited by to ID of invite creator
-          })
         }
         password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password+salt
         let token = crypto.createHash('sha256').update(username+password+config['server']['salt']).digest('base64'); //User Token
-        if(inv != null) { //Allows the SQL query to insert NULL properly. 
-          inv = `'${inv}'`
+        if (config['settings']['invites'] == 'on') { //Check if invites are enabled
+          let invite = req.body.invite;
+          console.log(invite);
+          connection.query(`SELECT * FROM invites WHERE invite = '${invite}'`, (err, rows) => {
+            console.log(rows);
+            if (err) throw err
+            if (rows.length == 0) { //Invite doesn't exist
+              console.log("invite doesn't exist");
+              return res.status(406).send(errors['invalidInvite']);
+            } else if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
+              console.log("Invite has no more uses left");
+              res.status(406).send(errors['invalidInvite']);
+            } else { //Invite exists and has uses left
+              let invBy = rows[0].creator; //Sets invited by to ID of invite creator
+              connection.query(`UPDATE invites SET uses = uses + 1 WHERE invite = '${invite}'`, (err, rows) => {
+                console.log("Invite updated");
+                if (err) throw err
+              })
+              connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
+                if (err) throw err
+              })
+              req.session.toast = ["#6272a4","Account created"];
+              return res.status(201).redirect('login');
+            }
+          })
+        } else { //An invite is not required. 
+          console.log(invBy);
+          connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, NULL, NULL, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
+            if (err) throw err
+          })
+          req.session.toast = ["#6272a4","Account created"];
+          return res.status(201).redirect('login');
         }
-        connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, ${inv}, ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
-          if (err) throw err
-        })
-        req.session.toast = ["#6272a4","Account created"];
-        res.status(201).redirect('login');
-        return;
       }); 
     } else {
-      res.status(406).json(errors['invalidUsername']);
+      return res.status(406).send(errors['invalidUsername']);
     }
   } else {
-    res.status(417).json(errors['unfilledFields']);
-    return;
+    return res.status(417).send(errors['unfilledFields']);
   }
 })
 //log in
@@ -448,14 +451,14 @@ app.post('/auth', body('username').not().isEmpty().trim().escape(), function(req
           req.session.toast = ["#6272a4","Successfully signed in"];
           res.status(200).redirect('home');
         } else {
-          res.status(406).json(errors['invalidLogin']);
+          return res.status(406).send(errors['invalidLogin']);
         }			
       });
       } else {
-          res.status(417).json(errors['loginInfoMissing']);
+        return res.status(417).send(errors['loginInfoMissing']);
       }
     } else {
-      res.status(406).json(errors['invalidUsername']);
+      return res.status(406).send(errors['invalidUsername']);
     }
 });
 

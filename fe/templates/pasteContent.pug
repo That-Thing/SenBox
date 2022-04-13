@@ -15,7 +15,9 @@ html
     body(class=theme)
         div(class="container")
             div(class=bg + "card mt-5 mx-auto w-75 mb-3")
-                h1(class=bg + "card-header") #{paste['title']}
+                h1(class=bg + "card-header d-flex") 
+                    p(class="mt-auto mb-auto") #{paste['title']}
+                    a(href="/pastes/raw/"+paste['id'] class="ms-auto btn btn-primary" target="_blank") Raw
                 div(class="card-body")
                     if paste['syntax'] == 'none'
                         pre
