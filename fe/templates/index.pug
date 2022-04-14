@@ -1,0 +1,17 @@
+doctype html 
+html
+    head 
+        include include/head.pug
+        title #{config.settings.name}
+    body(class=theme)
+        div(class="jumbotron jumbotron-fluid mt-5")
+            div(class="container text-center")
+                    h1(class="display-4")
+                        img(src="/images/logo.png" width="100" height="100")
+                        | #{config.settings.name}
+                    p(class="lead") #{config.settings.description}
+        div(class="container text-center")
+            span(class="ms-auto me-auto")
+                a(href="/login" class="btn btn-primary me-4") Login
+                a(href="/register" class="btn btn-primary") Register
+include include/footer.pug

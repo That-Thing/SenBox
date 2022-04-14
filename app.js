@@ -107,20 +107,10 @@ function decodeBase64Image(dataString) {
 
 //Terms of Service and Privacy Policy
 app.get('/tos', function(req, res) {
-  if (req.session.loggedin == true) {
-    res.status(200).render('tos', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
-  } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
-  }
+  res.status(200).render('tos', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
 })
 app.get('/privacy', function(req, res) {
-  if (req.session.loggedin == true) {
-    res.status(200).render('privacy', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
-  } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
-  }
+  res.status(200).render('privacy', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
 })
 
 
@@ -150,6 +140,10 @@ app.get('/logout', function(req, res) {
   req.session.destroy();
   res.status(200).redirect('login');
 });
+//Landing page
+app.get('/', function(req, res) {
+  res.status(200).render('index', {config: reloadConfig(), appTheme : req.cookies.theme, session:req.session, path: "/"});
+})
 //Home page
 app.get('/home', function(req, res) {
   if (req.session.loggedin == true) {
