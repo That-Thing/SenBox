@@ -42,6 +42,18 @@ html
                             else
                                 -var bannerDiv = "background: #404040;"
                             div(class="rounded p-4 user-background edit-banner" id="banner" style=bannerDiv)
+                                div(class="modal" tabindex="-1" role="dialog" id="avatar-change-modal")
+                                    div(class="modal-dialog" role="document" style="min-width: 500px")
+                                        div(class=bg + "modal-content fit-content")
+                                            div(class="modal-header")
+                                                h5(class="modal-title") Change Avatar
+                                            div(class="modal-body")
+                                                div(class="row")
+                                                    div(class="col-md-12 text-center")
+                                                        div(id="avatar-crop-display")
+                                            div(class="modal-footer")
+                                                button(type="button" class="btn btn-danger" data-bs-dismiss="modal") Cancel
+                                                button(type="button" class="btn btn-primary crop-avatar") Save
                                 div(class="modal" tabindex="-1" role="dialog" id="banner-change-modal")
                                     div(class="modal-dialog" role="document" style="min-width: 700px")
                                         div(class=bg + "modal-content fit-content")
@@ -53,7 +65,7 @@ html
                                                         div(id="banner-crop-display")
                                             div(class="modal-footer")
                                                 button(type="button" class="btn btn-danger" data-bs-dismiss="modal") Cancel
-                                                button(type="button" class="btn btn-primary crop_image") Save
+                                                button(type="button" class="btn btn-primary crop-banner") Save
                                 input(type="file" accept="image/*" style="display: none;" id="banner-input")
                                 button(type="button" class="ms-auto btn btn-secondary float-end change-banner-button" onclick="document.getElementById('banner-input').click()") Change banner
                                 div(class="d-flex")

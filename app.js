@@ -370,6 +370,32 @@ app.post("/banner/upload", (req, res) => {
     return res.status(400).send(errors['missingFiles']);
   }
 })
+app.post("/user/avatar", (req, res) => {
+  if (req.session.loggedin == false) { //Check if user is logged in
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+  if (req.body.payload) { //Check if file is present
+    var avatarData = decodeBase64Image(req.body.payload);
+    let dimensions = sizeOf(Buffer.from(avatarData.data, 'base64'));
+    if (dimensions.width == 500 && dimensions.height == 500) { //Check if files are the correct size
+      fs.writeFile(`./${config['upload']['avatar-path']}/${req.session.uid}.png`, avatarData.data, function(err) { 
+        if(err) {
+          console.log(err);
+          return res.status(500).send(errors['fileWriteError']);
+        }
+      });
+      connection.query(`UPDATE accounts SET avatar='/${config['upload']['avatar-path']}/${req.session.uid}.png'`, function(err, rows) {
+        if (err) throw err;
+        res.status(200);
+      });
+    } else {
+      return res.status(400).send(errors['invalidDimensions']);
+    }
+  } else {
+    return res.status(400).send(errors['missingFiles']);
+  }
+})
 
 //register account
 app.post('/register', body('email').isEmail().normalizeEmail(), body('username').not().isEmpty().trim().escape(), body('invite').optional({checkFalsy: true}).trim().escape().isLength({ max:25 }), (req, res) => {
@@ -395,20 +421,16 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
         let token = crypto.createHash('sha256').update(username+password+config['server']['salt']).digest('base64'); //User Token
         if (config['settings']['invites'] == 'on') { //Check if invites are enabled
           let invite = req.body.invite;
-          console.log(invite);
           connection.query(`SELECT * FROM invites WHERE invite = '${invite}'`, (err, rows) => {
-            console.log(rows);
             if (err) throw err
             if (rows.length == 0) { //Invite doesn't exist
               console.log("invite doesn't exist");
               return res.status(406).send(errors['invalidInvite']);
             } else if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
-              console.log("Invite has no more uses left");
               res.status(406).send(errors['invalidInvite']);
             } else { //Invite exists and has uses left
               let invBy = rows[0].creator; //Sets invited by to ID of invite creator
               connection.query(`UPDATE invites SET uses = uses + 1 WHERE invite = '${invite}'`, (err, rows) => {
-                console.log("Invite updated");
                 if (err) throw err
               })
               connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
@@ -419,7 +441,6 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
             }
           })
         } else { //An invite is not required. 
-          console.log(invBy);
           connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, NULL, NULL, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
             if (err) throw err
           })
