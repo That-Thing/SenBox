@@ -2,7 +2,10 @@ window.onload = function() {
     $('#paste-submit').click(function() { 
         var pasteContent = $('#paste-input').val();
         var pasteTitle = $('#paste-title').val();
-        var pasteBurn = $('#paste-burn').val();
+        var pasteBurn = 'off';
+        if ($('#paste-burn').is(':checked')) {
+            pasteBurn = 'on';
+        }
         var pasteSyntax = $("#syntax-select").val();
         if (pasteContent == '') {
             $.toast({text: 'Paste body cannot be blank', loader: false, bgColor:"#6272a4"}) 

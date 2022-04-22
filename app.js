@@ -514,6 +514,7 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
     let title = req.body.title;
     let content = req.body.content;
     let burn = req.body.burn;
+    console.log(burn);
     if(burn == 'on') {
       burn = 1;
     } else {
