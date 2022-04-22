@@ -231,6 +231,11 @@ app.get('/pastes/:id', function(req, res) {
     if (err) throw err;
     if (rows.length > 0) {
       let paste = rows[0];
+      if(paste['burn'] == 1) { //Delete paste so it can't be accessed again
+        connection.query('DELETE FROM pastes WHERE id=?', [id], (err, rows) => {
+          if (err) throw err;
+        })
+      }
       res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
     } else {
       res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
@@ -243,6 +248,11 @@ app.get('/pastes/raw/:id', function(req, res) {
     if (err) throw err;
     if (rows.length > 0) {
       let paste = rows[0];
+      if(paste['burn'] == 1) { //Delete paste so it can't be accessed again
+        connection.query('DELETE FROM pastes WHERE id=?', [id], (err, rows) => {
+          if (err) throw err;
+        })
+      } 
       res.status(200).send(`<pre>${decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\")}</pre>`)
     } else {
       res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
@@ -427,7 +437,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
               connection.query(`UPDATE invites SET uses = uses + 1 WHERE invite = '${invite}'`, (err, rows) => {
                 if (err) throw err
               })
-              connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
+              connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL)`, (err, rows) => {
                 if (err) throw err
               })
               req.session.toast = ["#6272a4","Account created"];
@@ -435,7 +445,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
             }
           })
         } else { //An invite is not required. 
-          connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, NULL, NULL, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']})`, (err, rows) => {
+          connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, NULL, NULL, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL)`, (err, rows) => {
             if (err) throw err
           })
           req.session.toast = ["#6272a4","Account created"];
@@ -499,12 +509,23 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
 
 });
 
-app.post('/paste', body("content").escape(), body("title").optional({checkFalsy: true}).trim().escape(), body("syntax").optional({checkFalsy: true}).trim().escape(), function(req, res) {
+app.post('/paste', body("content").escape(), body("title").optional({checkFalsy: true}).trim().escape(), body("syntax").optional({checkFalsy: true}).trim().escape(), body("password").optional({checkFalsy: true}).trim().escape(),function(req, res) {
   if (req.session.loggedin == true) { //Check if user is logged in
     let title = req.body.title;
     let content = req.body.content;
     let burn = req.body.burn;
+    if(burn == 'on') {
+      burn = 1;
+    } else {
+      burn = 0;
+    }
     let syntax = req.body.syntax;
+    let password = req.body.password;
+    if (password) {
+      password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
+    } else {
+      password = null;
+    }
     if(!title) {
       title = "Untitled";
     }
@@ -520,13 +541,13 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
     }
     let r = /[^A-Za-z0-9]/g;
     let id = crypto.createHash('sha256').update(title+content+req.session.uid+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
-    connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()})`, function(err, rows) {
+    connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()}, ${password})`, function(err, rows) {
       if (err) throw err;
       res.status(200).json({"url":"/pastes/"+id});
     });
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+    res.status(200).json({"error":"You are not signed in"});
   }
 })
 app.post('/invites/generate', body("maxUses").optional({checkFalsy: true}).isNumeric().default(1), function(req, res) {

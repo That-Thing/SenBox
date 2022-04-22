@@ -1,109 +1,85 @@
--- MySQL dump 10.13  Distrib 8.0.28, for Linux (x86_64)
---
--- Host: localhost    Database: senbox
--- ------------------------------------------------------
--- Server version	8.0.28-0ubuntu0.20.04.3
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               10.4.11-MariaDB - mariadb.org binary distribution
+-- Server OS:                    Win64
+-- HeidiSQL Version:             11.3.0.6295
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 /*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `accounts`
---
 
-DROP TABLE IF EXISTS `accounts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `accounts` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `group` int NOT NULL DEFAULT '2',
-  `invite` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `invitedBy` int DEFAULT NULL,
-  `joinDate` bigint DEFAULT NULL,
-  `ip` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `banner` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `avatar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User avatar',
-  `bio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `twitter` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `website` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `location` text,
-  `invites` int DEFAULT NULL,
+-- Dumping database structure for senbox
+CREATE DATABASE IF NOT EXISTS `senbox` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+USE `senbox`;
+
+-- Dumping structure for table senbox.accounts
+CREATE TABLE IF NOT EXISTS `accounts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` tinytext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `group` int(11) NOT NULL DEFAULT 2,
+  `invite` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `invitedBy` int(11) DEFAULT NULL,
+  `joinDate` bigint(20) DEFAULT NULL,
+  `ip` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `banner` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User avatar',
+  `bio` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `twitter` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `website` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `invites` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `files`
---
+-- Data exporting was unselected.
 
-DROP TABLE IF EXISTS `files`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `files` (
-  `id` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `filename` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner` int NOT NULL,
-  `date` bigint NOT NULL DEFAULT '0',
-  `hash` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `size` bigint NOT NULL,
-  `mime` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'File mimetype'
+-- Dumping structure for table senbox.files
+CREATE TABLE IF NOT EXISTS `files` (
+  `id` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `filename` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` int(11) NOT NULL,
+  `date` bigint(20) NOT NULL DEFAULT 0,
+  `hash` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `size` bigint(20) NOT NULL,
+  `mime` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'File mimetype'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `invites`
---
+-- Data exporting was unselected.
 
-DROP TABLE IF EXISTS `invites`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `invites` (
-  `invite` text NOT NULL,
-  `creator` int NOT NULL,
-  `maxUses` int NOT NULL DEFAULT '1',
-  `uses` int NOT NULL DEFAULT '0',
-  `date` bigint DEFAULT NULL
+-- Dumping structure for table senbox.invites
+CREATE TABLE IF NOT EXISTS `invites` (
+  `invite` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `creator` int(11) NOT NULL,
+  `maxUses` int(11) NOT NULL DEFAULT 1,
+  `uses` int(11) NOT NULL DEFAULT 0,
+  `date` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `pastes`
---
+-- Data exporting was unselected.
 
-DROP TABLE IF EXISTS `pastes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `pastes` (
-  `id` text NOT NULL,
-  `owner` int NOT NULL DEFAULT '0',
-  `title` text NOT NULL,
-  `content` longtext NOT NULL,
-  `burn` tinyint NOT NULL DEFAULT '0',
-  `syntax` text,
-  `date` bigint NOT NULL DEFAULT '0'
+-- Dumping structure for table senbox.pastes
+CREATE TABLE IF NOT EXISTS `pastes` (
+  `id` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` int(11) NOT NULL DEFAULT 0,
+  `title` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `burn` tinyint(4) NOT NULL DEFAULT 0,
+  `syntax` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `date` bigint(20) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+-- Data exporting was unselected.
+
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2022-04-11 12:03:28
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
