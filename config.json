@@ -15,7 +15,7 @@
         "name": "SenBox",
         "description": "A simple, free, and exclusive file hosting solution.",
         "registrations": "on",
-        "invites": "on"
+        "invites": "off"
     },
     "upload": {
         "path": "files",
