@@ -1,6 +1,15 @@
 doctype html 
 html
     head 
+        meta(name="title" content=config['settings']['name'])
+        meta(name="description" content=['settings']['description'])
+        meta(name="keywords" content="paste, filehost, " + config['settings']['name'])
+        meta(name="author" content=config['settings']['name'])
+        meta(property="og:title" content=config['settings']['name'])
+        meta(property="og:description" content=['settings']['description'])
+        meta(property="og:type" content="website")
+        meta(property="og:image" content="/images/logo.png")
+        meta(property="og:site_name" content=config['settings']['name'])
         include include/head.pug
         title #{config['settings']['name']}
     body(class=theme)

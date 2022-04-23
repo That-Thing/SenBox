@@ -1,6 +1,15 @@
 doctype html 
 html
     head 
+        meta(name="title" content="Privacy Policy")
+        meta(name="description" content=config['settings']['name'] + " Privacy Policy")
+        meta(name="keywords" content="paste, filehost, " + config['settings']['name'])
+        meta(name="author" content=config['settings']['name'])
+        meta(property="og:title" content="Privacy Policy")
+        meta(property="og:description" content=config['settings']['name'] + " Privacy Policy")
+        meta(property="og:type" content="website")
+        meta(property="og:image" content="/images/logo.png")
+        meta(property="og:site_name" content=config['settings']['name'])
         include include/head.pug
         title Privacy Policy
     body(class=theme)

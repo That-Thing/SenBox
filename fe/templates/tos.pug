@@ -1,6 +1,15 @@
 doctype html 
 html
     head 
+        meta(name="title" content="Terms of Service")
+        meta(name="description" content=config['settings']['name'] + " Terms of Service")
+        meta(name="keywords" content="paste, filehost, " + config['settings']['name'])
+        meta(name="author" content=config['settings']['name'])
+        meta(property="og:title" content="Terms of Serviceister")
+        meta(property="og:description" content=config['settings']['name'] + " Terms of Service")
+        meta(property="og:type" content="website")
+        meta(property="og:image" content="/images/logo.png")
+        meta(property="og:site_name" content=config['settings']['name'])
         include include/head.pug
         title Terms of Service
     body(class=theme)
