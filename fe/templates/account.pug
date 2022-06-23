@@ -15,9 +15,10 @@ html
                             span(class="d-flex")
                                 p(class="mb-0 mt-0") Join Date:
                                 p(class="mb-0 mt-0 ms-1 text-muted") #{date}
-                            span(class="d-flex")
-                                p(class="mb-0 mt-0") Invited by: 
-                                a(class="mb-0 mt-0 ms-1" href="/users/test") Test
+                            if invBy
+                                span(class="d-flex")
+                                    p(class="mb-0 mt-0") Invited by: 
+                                    a(class="mb-0 mt-0 ms-1" href="/user/"+invBy) #{invBy}
                             span(class="d-flex")
                                 p(class="mb-0 mt-0") UID:
                                 p(class="mb-0 mt-0 ms-1 text-muted") #{user.id}

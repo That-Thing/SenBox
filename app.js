@@ -296,8 +296,21 @@ app.get('/user/:user', function(req, res) {
         if(rows.length == 0) { //User doesn't exist in DB
           res.sendStatus(404);
         }
+        let account = rows[0];
         var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
-        res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date, path: "account"});
+        if(account.invitedBy != null) {
+          connection.query(`SELECT * FROM accounts WHERE id=${account.invitedBy}`, (err, rows) => {
+            let inviter;
+            if (rows.length > 0) {
+              inviter = rows[0].username;
+            } else {
+              inviter = null;
+            }
+            res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: inviter, date: date, path: "account"});
+          })
+        } else {
+          res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: null, date: date, path: "account"});
+        }
       })
     } else {
       res.status(406).json(errors['invalidUsername']);
@@ -316,8 +329,21 @@ app.get('/user/:user/edit', function(req, res) {
         if(rows.length == 0) { //User doesn't exist in DB
           res.sendStatus(404);
         }
+        let account = rows[0];
         var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
-        res.status(200).render('editProfile', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:rows[0], date: date, path: "account"});
+        if(account.invitedBy != null) {
+          connection.query(`SELECT * FROM accounts WHERE id=${account.invitedBy}`, (err, rows) => {
+            let inviter;
+            if (rows.length > 0) {
+              inviter = rows[0].username;
+            } else {
+              inviter = null;
+            }
+            res.status(200).render('editProfile', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: inviter, date: date, path: "account"});
+          })
+        } else {
+          res.status(200).render('editProfile', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: null, date: date, path: "account"});
+        }
       })
     } else {
       res.status(406).json(errors['invalidUsername']);
@@ -438,10 +464,10 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
   let email = req.body.email;
   if (username && password && email) { //Check if all required information is present
     if (RegExp('^[a-zA-Z0-9_.-]*$').test(username) == true) { //Make sure that only some characters are allowed    
-      connection.query('SELECT * FROM accounts WHERE username = ? OR email = ?', [username, email], function(err , rows) {
+      connection.query('SELECT * FROM accounts WHERE LOWER(username) = ? OR email = ?', [username.toLowerCase(), email], function(err , rows) {
         if (err) throw err;
         if (rows.length > 0) { //Account already exists.  
-          if (rows[0].username == username) { //Account with same username exists
+          if (rows[0].username.toLowerCase() == username.toLowerCase()) { //Account with same username exists
             return res.status(406).send(errors['usernameExists']);
           }
           if (rows[0].email == email) { //Account with email exists
