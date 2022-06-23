@@ -3,6 +3,7 @@ window.onload = function() {
         var pasteContent = $('#paste-input').val();
         var pasteTitle = $('#paste-title').val();
         var pasteBurn = 'off';
+        var pastePassword = $('#paste-password').val();
         if ($('#paste-burn').is(':checked')) {
             pasteBurn = 'on';
         }
@@ -11,7 +12,7 @@ window.onload = function() {
             $.toast({text: 'Paste body cannot be blank', loader: false, bgColor:"#6272a4"}) 
             return;
         }
-        $.post('/paste', {"title":pasteTitle, "content":pasteContent, "burn": pasteBurn, "syntax": pasteSyntax}, function(result) {
+        $.post('/paste', {"title":pasteTitle, "content":pasteContent, "burn": pasteBurn, "syntax": pasteSyntax, "password": pastePassword}, function(result) {
             if (result.url) {
                 $("#paste-url").text(window.location['href'].split('/')[2]+result.url);
                 $("#paste-modal").modal("show");

@@ -236,7 +236,11 @@ app.get('/pastes/:id', function(req, res) {
           if (err) throw err;
         })
       }
-      res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
+      if (paste['password'] == null) { //Paste has no password, so can be rendered safely. 
+        res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
+      } else { //Render password input site instead
+        res.status(200).render('pasteAuth', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, path: "pasteAuth"})
+      }
     } else {
       res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
     }
@@ -259,7 +263,22 @@ app.get('/pastes/raw/:id', function(req, res) {
     }
   })
 })
-
+app.post('/pastes/auth/:id', body("password").escape(), (req, res) => {
+  let id = req.params.id;
+  connection.query(`SELECT * FROM pastes WHERE id='${id}'`, (err, rows) => {
+    if (err) throw err;
+    if (rows.length > 0) {
+      let paste = rows[0];
+      if (paste['password'] == crypto.createHash('sha256').update(req.body.password+config['server']['salt']).digest('base64')) {
+        res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
+      } else {
+        res.status(406).json("Invalid password");
+      }
+    } else {
+      res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+    }
+  })
+})
 //User account page
 app.get('/user/:user', function(req, res) {
   if (req.session.loggedin == true) {
@@ -428,7 +447,6 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
           connection.query(`SELECT * FROM invites WHERE invite = '${invite}'`, (err, rows) => {
             if (err) throw err
             if (rows.length == 0) { //Invite doesn't exist
-              console.log("invite doesn't exist");
               return res.status(406).send(errors['invalidInvite']);
             } else if (rows[0].maxUses <= rows[0].uses) { //Invite has no more uses left
               res.status(406).send(errors['invalidInvite']);
@@ -514,7 +532,6 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
     let title = req.body.title;
     let content = req.body.content;
     let burn = req.body.burn;
-    console.log(burn);
     if(burn == 'on') {
       burn = 1;
     } else {
@@ -542,7 +559,7 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
     }
     let r = /[^A-Za-z0-9]/g;
     let id = crypto.createHash('sha256').update(title+content+req.session.uid+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
-    connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()}, ${password})`, function(err, rows) {
+    connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()}, '${password}')`, function(err, rows) {
       if (err) throw err;
       res.status(200).json({"url":"/pastes/"+id});
     });

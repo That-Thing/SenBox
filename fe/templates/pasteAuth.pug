@@ -1,0 +1,14 @@
+doctype html 
+html
+    head
+        include include/head.pug
+        link(href="styles/home.css" rel="stylesheet" type="text/css")
+        title Paste
+    body(class=theme)
+        div(class="container")
+            div(class=bg + "card mt-5 mx-auto w-75")
+                h1(class=bg + "card-header") Enter password
+                div(class="card-body")
+                    form(action="/pastes/auth/"+paste['id'] method="POST")
+                        input(class="form-control form-control-lg" type="password" id="paste-password" placeholder="Password" name="password")
+                        button(type="submit" id="password-submit" class="btn btn-primary mt-2 ms-2") Submit

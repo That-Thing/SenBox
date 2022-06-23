@@ -2,6 +2,7 @@ Dropzone.autoDiscover = false;
 window.onload = function() {
     Dropzone.options.myDropzone = false;
     var myDropzone = new Dropzone("#dropzone", {
+		maxFilesize: 5000,
         url: "upload",
         dictDefaultMessage: "Select or drop files here to upload",
         paramName: "file",
