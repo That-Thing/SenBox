@@ -559,7 +559,7 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
     }
     let r = /[^A-Za-z0-9]/g;
     let id = crypto.createHash('sha256').update(title+content+req.session.uid+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
-    connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()}, '${password}')`, function(err, rows) {
+    connection.query(`INSERT INTO pastes VALUES ('${id}', ${req.session.uid}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()}, ${password == null ? null : "'"+password+"'"})`, function(err, rows) {
       if (err) throw err;
       res.status(200).json({"url":"/pastes/"+id});
     });
