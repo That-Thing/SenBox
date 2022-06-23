@@ -239,7 +239,7 @@ app.get('/pastes/:id', function(req, res) {
       if (paste['password'] == null) { //Paste has no password, so can be rendered safely. 
         res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
       } else { //Render password input site instead
-        res.status(200).render('pasteAuth', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, path: "pasteAuth"})
+        res.status(200).render('pasteAuth', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, raw: "false", path: "pasteAuth"})
       }
     } else {
       res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
@@ -256,8 +256,12 @@ app.get('/pastes/raw/:id', function(req, res) {
         connection.query('DELETE FROM pastes WHERE id=?', [id], (err, rows) => {
           if (err) throw err;
         })
-      } 
-      res.status(200).send(`<pre>${decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\")}</pre>`)
+      }
+      if (paste['password'] == null) { //Paste has no password, so can be rendered safely. 
+        res.status(200).send(`<pre>${decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\")}</pre>`)
+      } else { //Render password input site instead
+        res.status(200).render('pasteAuth', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, raw: "true", path: "pasteAuth"})
+      }
     } else {
       res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
     }
@@ -270,7 +274,11 @@ app.post('/pastes/auth/:id', body("password").escape(), (req, res) => {
     if (rows.length > 0) {
       let paste = rows[0];
       if (paste['password'] == crypto.createHash('sha256').update(req.body.password+config['server']['salt']).digest('base64')) {
-        res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
+        if (req.body.raw == "false") {
+          res.status(200).render('pasteContent', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, paste: paste, content: decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\"),path: "paste"})
+        } else {
+          res.status(200).send(`<pre>${decode(paste['content']).replace(/&#x2F;/g, "/").replace(/&#x27;/g, "'").replace(/&#x5C;/g, "\\")}</pre>`)
+        }
       } else {
         res.status(406).json("Invalid password");
       }
