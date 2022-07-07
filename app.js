@@ -489,7 +489,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
               connection.query(`UPDATE invites SET uses = uses + 1 WHERE invite = '${invite}'`, (err, rows) => {
                 if (err) throw err
               })
-              connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL)`, (err, rows) => {
+              connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['4']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['4']['invites']}, 0, NULL)`, (err, rows) => {
                 if (err) throw err
               })
               req.session.toast = ["#6272a4","Account created"];
@@ -497,7 +497,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
             }
           })
         } else { //An invite is not required. 
-          connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, NULL, NULL, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL)`, (err, rows) => {
+          connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['4']['id']}, NULL, NULL, ${Date.now()}, "${req.socket.remoteAddress}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['4']['invites']}, 0, NULL)`, (err, rows) => {
             if (err) throw err
           })
           req.session.toast = ["#6272a4","Account created"];
@@ -613,7 +613,7 @@ app.post('/invites/generate', body("maxUses").optional({checkFalsy: true}).isNum
       maxUses = 1;
     }
     if(maxUses > 1) {
-      if(req.session.group > 1) {
+      if(req.session.group > 2) {
         maxUses = 1;
       }
     }

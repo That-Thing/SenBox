@@ -11,5 +11,5 @@ html
                 div(class="card-body")
                     form(action="/pastes/auth/"+paste['id'] method="POST")
                         input(type="hidden" name="raw" value=raw)
-                        input(class="form-control form-control-lg" type="password" id="paste-password" placeholder="Password" name="password" autocomplete="off" required)
+                        input(class="form-control form-control-lg" type="password" id="paste-password" placeholder="Password" name="password" required)
                         button(type="submit" id="password-submit" class="btn btn-primary mt-2 ms-2") Submit

@@ -29,26 +29,26 @@
     "groups": {
         "3": {
             "name": "User",
-            "id": 3,
+            "id": 4,
             "default-storage": 10485760,
             "invites": 1
         },
         "2": {
             "name": "Upgraded",
-            "id": 2,
-            "default-storage": 0,
+            "id": 3,
+            "default-storage": 10485760,
             "invites": 3
         },
         "1": {
             "name": "Admin",
-            "id": 1,
-            "default-storage": 0,
+            "id": 2,
+            "default-storage": 10485760,
             "invites": 0
         },
         "0": {
             "name": "root",
-            "id": 0,
-            "default-storage": 0,
+            "id": 1,
+            "default-storage": 10485760,
             "invites": 0
         }
     }

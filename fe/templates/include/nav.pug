@@ -13,6 +13,9 @@ nav(class=nav + "navbar navbar-expand-lg px-2")
                     a(class=path=='account' ? 'nav-link active' : 'nav-link' href="/user/"+session.username) Account
                 li(class="nav-item")
                     a(class=path=='settings' ? 'nav-link active' : 'nav-link' href="/settings") Settings
+                if session.group < 4
+                    li(class="nav-item")
+                        a(class=path=='admin' ? 'nav-link active' : 'nav-link' href="/admin") Admin
             ul(class="navbar-nav ms-auto")
                 li(class="nav-item")
                     if appTheme == 'dark'
