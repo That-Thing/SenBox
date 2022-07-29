@@ -7,4 +7,9 @@ $(function(ready){
         }
         return false;
     });
+    $(".file-url").click(function() {
+        var url = $(this).attr("url");
+        navigator.clipboard.writeText(`${window.location['origin']}/${url}`);
+        $.toast({text: "File URL copied to clipboard", loader: false, bgColor:"#6272a4"})
+    });
 });
