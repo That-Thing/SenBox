@@ -150,3 +150,15 @@ nav {
 .edit-avatar:hover .change-avatar-button {
     display: block;
 }
+
+.file-url {
+    display: none;
+    position: absolute;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 1;
+}
+.uploaded-file:hover > .file-url {
+    display: block;
+}

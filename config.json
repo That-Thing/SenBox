@@ -5,6 +5,10 @@
         "errors": "errors_en.json",
         "request_size_limit": "50mb"
     },
+    "discord" : {
+        "discord_client_id": "",
+        "discord_client_secret": ""
+    },
     "database": {
         "host":"localhost",
         "user":"root",
