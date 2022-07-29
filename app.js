@@ -369,6 +369,20 @@ app.get("/invites", function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 }) 
+app.get("/admin", function(req, res) {
+  if (req.session.loggedin == true) {
+    if(req.session.group < 2) { //Check if user is admin or higher
+      var revision = require('child_process') .execSync('git rev-parse HEAD') .toString().trim();
+      var branch = require('child_process') .execSync('git rev-parse --abbrev-ref HEAD') .toString().trim();
+      res.status(200).render('admin', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, revision: revision, branch: branch,path: "admin"});
+    } else {
+      res.status(406).json(errors['noPermission']);
+    }
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
+  }
+})
 app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().escape().isLength({max:250}), body('twitter').optional({checkFalsy: true}).trim().escape().isLength({ max:16 }), body('website').optional({checkFalsy: true}).trim().isURL().isLength({ max:30 }), body('location').trim().escape().isLength({ max:30 }).optional({checkFalsy: true}), function(req, res) { 
   if (req.session.loggedin == true) {
     let user = req.params['user'];

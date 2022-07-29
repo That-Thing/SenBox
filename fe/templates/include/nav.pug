@@ -1,5 +1,9 @@
 nav(class=nav + "navbar navbar-expand-lg px-2")
-            a(href="/home" class="navbar-brand") #{config['settings']['name']}  
+    div(class="container-fluid")
+        a(href="/home" class="navbar-brand") #{config['settings']['name']}
+        button(class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="true" aria-label="Toggle navigation")
+            span(class="navbar-toggler-icon")
+        div(class="collapse navbar-collapse" id="navbarNav")
             ul(class="navbar-nav")
                 li(class="nav-item")
                     a(class=path=='home' ? 'nav-link active' : 'nav-link' href="/home" ) Home

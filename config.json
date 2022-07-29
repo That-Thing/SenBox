@@ -23,7 +23,7 @@
         "banner-size": 10,
         "avatar-path": "files/user/avatar",
         "avatar-size": 10,
-        "max-file-size": "1",
+        "max-file-size": "1000",
         "banned-mimes": ["application/zip", "application/x-zip-compressed","application/exe"]
     },
     "groups": {

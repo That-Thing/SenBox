@@ -1,0 +1,55 @@
+doctype html 
+html
+    head
+        include include/head.pug
+        link(href="/styles/home.css" rel="stylesheet" type="text/css")
+        title Site Settings
+    body(class=theme)
+        include include/nav.pug
+        div(class="container")
+            div(class="row")
+                div(class="col-lg-6 mb-4 w-25")
+                    div(class=bg + "card mt-5 mx-auto")
+                        h5(class=bg + "card-header") Information
+                        div(class="card-body p-2")
+                            span(class="d-flex")
+                                i(class="fa-brands fa-git-alt mt-auto mb-auto")
+                                a(class="ms-1 mt-auto mb-auto" href="https://github.com/That-Thing/SenBox/commit/"+revision target="_blank") #{revision.substring(0,7)}
+                            span(class="d-flex")
+                                i(class="fa-solid fa-code-branch mt-auto mb-auto")
+                                a(class="ms-1 mt-auto mb-auto" href="https://github.com/That-Thing/SenBox/tree/"+branch target="_blank") #{branch}
+                div(class="col-lg-6 mb-4 w-75")
+                    div(class=bg + "card mt-5 mx-auto w-100 p-2")
+                        h5(class=bg + "card-header") Site Settings
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Site Name
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="Site Name" name="name" value=config.settings['name'])
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Site Description
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="Site Description" name="description" value=config.settings['description'])
+                        h4 Registering
+                        span(class="d-flex")
+                            div(class="form-check form-switch")
+                                label(class="form-check-label" for="registrations") Enable registrations
+                                if config.settings['registrations']=='on'
+                                    input(class="form-check-input" type="checkbox" id="registrations" name="registrations" checked)
+                                else
+                                    input(class="form-check-input" type="checkbox" id="registrations" name="registrations")
+                        span(class="d-flex")
+                            div(class="form-check form-switch")
+                                label(class="form-check-label" for="invites") Require invites
+                                if config.settings['invites']=='on'
+                                    input(class="form-check-input" type="checkbox" id="invites" name="invites" checked)
+                                else
+                                    input(class="form-check-input" type="checkbox" id="invites" name="invites")
+                        h4 Upload Settings 
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Max banner size (mb)
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="banner-size" value=config.upload['banner-size']) 
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Max avatar size (mb)
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="avatar-size" value=config.upload['avatar-size']) 
+                        span(class="d-flex")
+                            p(class="mt-auto mb-auto") Max file size (mb)
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="max-file-size" value=config.upload['max-file-size'])
+        include include/footer.pug
