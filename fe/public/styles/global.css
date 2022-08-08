@@ -158,6 +158,7 @@ nav {
     white-space: nowrap;
     overflow: hidden;
     z-index: 1;
+    padding: 10px;
 }
 .uploaded-file:hover > .file-url {
     display: block;
