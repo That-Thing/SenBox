@@ -55,15 +55,17 @@ html
                                 p(class="mt-auto mb-auto") Max file size (mb)
                                 input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="max-file-size" value=config.upload['max-file-size'])
                             div(class="row")
-                                    input(type="hidden" name="count" value="1")
-                                    div(class="control-group" id="fields")
+                                    div(class="control-group" id="banned-mimes")
+                                        input(type="hidden" name="mime-count" id="mime-count" value=config.upload['banned-mimes'].length)
                                         label(class="control-label" for="field1") Banned Mimetypes
                                         div(id='mime-list')
+                                            - let count = 1
                                             each mime in config.upload['banned-mimes']
                                                 span(class="d-flex mime-field")
-                                                    input(autocomplete="off" class="form-control form-control-sm mt-1 ms-1 w-25 me-2 mime-input" type="text" placeholder="ex: application/zip" value=mime)
+                                                    input(autocomplete="off" class="form-control form-control-sm mt-1 ms-1 w-25 me-2 mime-input" type="text" placeholder="ex: application/zip" value=mime name="mime-"+count)
                                                     button(class="btn btn-sm btn-danger mt-auto remove-mime" type="button")
                                                         i(class="fa-solid fa-minus")
+                                                    - count++
                                         button(class="btn btn-sm btn-success add-mime mt-3 ms-1" type="button")
                                             i(class="fa-solid fa-plus")
 
