@@ -12,5 +12,4 @@ $(document).ready(function(){
         $("#mime-list").append(html);
         $("#mime-count").val(parseInt($("#mime-count").val()) + 1);
     });
-    
 });
