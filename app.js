@@ -655,16 +655,17 @@ app.post('/invites/generate', body("maxUses").optional({checkFalsy: true}).isNum
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
-app.post('/admin/update', 
+app.post('/admin/update', //Santizing input just in case. 
 body('name').not().isEmpty().trim().escape(), 
-body('description').not().isEmpty().trim().escape(), 
 body('description').not().isEmpty().trim().escape(), 
 body('registrations').optional({checkFalsy: true}).escape(),
 body('invites').optional({checkFalsy: true}).escape(),
 body('bannerSize').not().isEmpty().isNumeric().default(config['upload']['banner-size']),
 body('avatarSize').not().isEmpty().isNumeric().default(config['upload']['avatar-size']),
 body('maxFileSize').not().isEmpty().isNumeric().default(config['upload']['max-file-size']),
+body('bannedMimes.*').optional({checkFalsy: true}).trim(),
 function(req, res) {
+  console.log(req.session.toast);
   if (req.session.loggedin == true) { //Check if user is logged in
     if(req.session.group > 2) {
       res.status(406).json({"err": errors['noPermission']});
@@ -677,13 +678,28 @@ function(req, res) {
     let bannerSize = req.body.bannerSize;
     let avatarSize = req.body.avatarSize;
     let maxFileSize = req.body.maxFileSize;
+    let bannedMimes = [];
+    if (req.body.bannedMimes) {
+      bannedMimes = req.body.bannedMimes;
+    }
     if(!registrations) {
       registrations = "off";
     }
     if(!invites) {
       invites = "off";
     }
-    console.log(req.body);
+    config['settings']['name'] = name;
+    config['settings']['description'] = description;
+    config['settings']['registrations'] = registrations;
+    config['settings']['invites'] = invites;
+    config['upload']['banner-size'] = bannerSize;
+    config['upload']['avatar-size'] = avatarSize;
+    config['upload']['max-file-size'] = maxFileSize;
+    config['upload']['banned-mimes'] = bannedMimes;
+    fs.writeFile('./config.json', JSON.stringify(config, null, 2), function (err) {
+      if (err) throw err;
+      res.status(200).json({"success":true});
+    });
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});

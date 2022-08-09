@@ -1,59 +1,62 @@
 {
-    "server": {
-        "port": 3000,
-        "salt": "password",
-        "errors": "errors_en.json",
-        "request_size_limit": "50mb"
+  "server": {
+    "port": 3000,
+    "salt": "password",
+    "errors": "errors_en.json",
+    "request_size_limit": "50mb"
+  },
+  "discord": {
+    "discord_client_id": "",
+    "discord_client_secret": ""
+  },
+  "database": {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "name": "senbox"
+  },
+  "settings": {
+    "name": "SenBox",
+    "description": "A simple, free, and exclusive file hosting solution.",
+    "registrations": "on",
+    "invites": "on"
+  },
+  "upload": {
+    "path": "files",
+    "banner-path": "files/user/banner",
+    "banner-size": "10",
+    "avatar-path": "files/user/avatar",
+    "avatar-size": "10",
+    "max-file-size": "1000",
+    "banned-mimes": [
+      "application/zip",
+      "application/x-zip-compressed"
+    ]
+  },
+  "groups": {
+    "0": {
+      "name": "root",
+      "id": 1,
+      "default-storage": 10485760,
+      "invites": 0
     },
-    "discord" : {
-        "discord_client_id": "",
-        "discord_client_secret": ""
+    "1": {
+      "name": "Admin",
+      "id": 2,
+      "default-storage": 10485760,
+      "invites": 0
     },
-    "database": {
-        "host":"localhost",
-        "user":"root",
-        "password":"",
-        "name":"senbox"
+    "2": {
+      "name": "Upgraded",
+      "id": 3,
+      "default-storage": 10485760,
+      "invites": 3
     },
-    "settings": {
-        "name": "SenBox",
-        "description": "A simple, free, and exclusive file hosting solution.",
-        "registrations": "on",
-        "invites": "on"
-    },
-    "upload": {
-        "path": "files",
-        "banner-path": "files/user/banner",
-        "banner-size": 10,
-        "avatar-path": "files/user/avatar",
-        "avatar-size": 10,
-        "max-file-size": "1000",
-        "banned-mimes": ["application/zip", "application/x-zip-compressed","application/exe"]
-    },
-    "groups": {
-        "3": {
-            "name": "User",
-            "id": 4,
-            "default-storage": 10485760,
-            "invites": 1
-        },
-        "2": {
-            "name": "Upgraded",
-            "id": 3,
-            "default-storage": 10485760,
-            "invites": 3
-        },
-        "1": {
-            "name": "Admin",
-            "id": 2,
-            "default-storage": 10485760,
-            "invites": 0
-        },
-        "0": {
-            "name": "root",
-            "id": 1,
-            "default-storage": 10485760,
-            "invites": 0
-        }
+    "3": {
+      "name": "User",
+      "id": 4,
+      "default-storage": 10485760,
+      "invites": 1
     }
+  }
 }

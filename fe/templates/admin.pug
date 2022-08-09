@@ -20,52 +20,49 @@ html
                                 i(class="fa-solid fa-code-branch mt-auto mb-auto")
                                 a(class="ms-1 mt-auto mb-auto" href="https://github.com/That-Thing/SenBox/tree/"+branch target="_blank") #{branch}
                 div(class="col-lg-6 mb-4 w-75")
-                    form(action="/admin/update", method="post")
-                        div(class=bg + "card mt-5 mx-auto w-100 p-2")
-                            h5(class=bg + "card-header") Site Settings
-                            span(class="d-flex") 
-                                p(class="mt-auto mb-auto") Site Name
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="Site Name" name="name" value=config.settings['name'])
-                            span(class="d-flex") 
-                                p(class="mt-auto mb-auto") Site Description
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="Site Description" name="description" value=config.settings['description'])
-                            h4 Registering
-                            span(class="d-flex")
-                                div(class="form-check form-switch")
-                                    label(class="form-check-label" for="registrations") Enable registrations
-                                    if config.settings['registrations']=='on'
-                                        input(class="form-check-input" type="checkbox" id="registrations" name="registrations" value="on" checked)
-                                    else
-                                        input(class="form-check-input" type="checkbox" id="registrations" name="registrations" value="on")
-                            span(class="d-flex")
-                                div(class="form-check form-switch")
-                                    label(class="form-check-label" for="invites") Require invites
-                                    if config.settings['invites']=='on'
-                                        input(class="form-check-input" type="checkbox" id="invites" name="invites" checked)
-                                    else
-                                        input(class="form-check-input" type="checkbox" id="invites" name="invites")
-                            h4 Upload Settings 
-                            span(class="d-flex") 
-                                p(class="mt-auto mb-auto") Max banner size (mb)
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="bannerSize" value=config.upload['banner-size']) 
-                            span(class="d-flex") 
-                                p(class="mt-auto mb-auto") Max avatar size (mb)
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="avatarSize" value=config.upload['avatar-size']) 
-                            span(class="d-flex")
-                                p(class="mt-auto mb-auto") Max file size (mb)
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="maxFileSize" value=config.upload['max-file-size'])
-                            div(class="control-group" id="banned-mimes")
-                                input(type="hidden" name="mime-count" id="mime-count" value=config.upload['banned-mimes'].length)
-                                label(class="control-label" for="field1") Banned Mimetypes
-                                div(id='mime-list')
-                                    - let count = 1
-                                    each mime in config.upload['banned-mimes']
-                                        span(class="d-flex mime-field")
-                                            input(autocomplete="off" class="form-control form-control-sm mt-1 ms-1 w-25 me-2 mime-input" type="text" placeholder="ex: application/zip" value=mime name="mime-"+count)
-                                            button(class="btn btn-sm btn-danger mt-auto remove-mime" type="button")
-                                                i(class="fa-solid fa-minus")
-                                            - count++
-                                button(class="btn btn-sm btn-success add-mime mt-3 ms-1" type="button")
-                                    i(class="fa-solid fa-plus")
-                            button(class="btn btn-sm btn-primary mt-3 ms-auto me-auto w-50" type="submit") Save
+                    div(class=bg + "card mt-5 mx-auto w-100 p-2")
+                        h5(class=bg + "card-header") Site Settings
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Site Name
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="Site Name" name="name" id='name' value=config.settings['name'])
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Site Description
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="Site Description" name="description" id='description' value=config.settings['description'])
+                        h4 Registering
+                        span(class="d-flex")
+                            div(class="form-check form-switch")
+                                label(class="form-check-label" for="registrations") Enable registrations
+                                if config.settings['registrations']=='on'
+                                    input(class="form-check-input" type="checkbox" id="registrations" name="registrations" value="on" checked)
+                                else
+                                    input(class="form-check-input" type="checkbox" id="registrations" name="registrations" value="on")
+                        span(class="d-flex")
+                            div(class="form-check form-switch")
+                                label(class="form-check-label" for="invites") Require invites
+                                if config.settings['invites']=='on'
+                                    input(class="form-check-input" type="checkbox" id="invites" name="invites" checked)
+                                else
+                                    input(class="form-check-input" type="checkbox" id="invites" name="invites")
+                        h4 Upload Settings 
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Max banner size (mb)
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="bannerSize" id='bannerSize' value=config.upload['banner-size']) 
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") Max avatar size (mb)
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="avatarSize" id='avatarSize' value=config.upload['avatar-size']) 
+                        span(class="d-flex")
+                            p(class="mt-auto mb-auto") Max file size (mb)
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="maxFileSize" id='maxFileSize' value=config.upload['max-file-size'])
+                        div(class="control-group" id="banned-mimes")
+                            label(class="control-label" for="field1") Banned Mimetypes
+                            div(id='mime-list')
+                                each mime in config.upload['banned-mimes']
+                                    span(class="d-flex mime-field")
+                                        input(autocomplete="off" class="form-control form-control-sm mt-1 ms-1 w-25 me-2 mime-input" type="text" placeholder="ex: application/zip" value=mime name="bannedMimes")
+                                        button(class="btn btn-sm btn-danger mt-auto remove-mime" type="button")
+                                            i(class="fa-solid fa-minus")
+                                        - count++
+                            button(class="btn btn-sm btn-success add-mime mt-3 ms-1" type="button")
+                                i(class="fa-solid fa-plus")
+                        button(class="btn btn-sm btn-primary mt-3 ms-auto me-auto w-50" id="save-settings") Save
         include include/footer.pug
