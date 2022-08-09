@@ -374,7 +374,8 @@ app.get("/admin", function(req, res) {
     if(req.session.group < 2) { //Check if user is admin or higher
       var revision = require('child_process').execSync('git rev-parse HEAD').toString().trim();
       var branch = require('child_process').execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-      res.status(200).render('admin', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, revision: revision, branch: branch,path: "admin"});
+      var commit = require('child_process').execSync('git rev-list --all --count').toString().trim();
+      res.status(200).render('admin', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, revision: revision, branch: branch, commit: commit, path: "admin"});
     } else {
       res.status(406).json(errors['noPermission']);
     }
