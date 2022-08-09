@@ -665,7 +665,6 @@ body('avatarSize').not().isEmpty().isNumeric().default(config['upload']['avatar-
 body('maxFileSize').not().isEmpty().isNumeric().default(config['upload']['max-file-size']),
 body('bannedMimes.*').optional({checkFalsy: true}).trim(),
 function(req, res) {
-  console.log(req.session.toast);
   if (req.session.loggedin == true) { //Check if user is logged in
     if(req.session.group > 2) {
       res.status(406).json({"err": errors['noPermission']});

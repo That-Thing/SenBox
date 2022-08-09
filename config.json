@@ -30,7 +30,8 @@
     "max-file-size": "1000",
     "banned-mimes": [
       "application/zip",
-      "application/x-zip-compressed"
+      "application/x-zip-compressed",
+      "application/exe"
     ]
   },
   "groups": {
