@@ -146,6 +146,7 @@ nav {
 .change-avatar-button {
     display: none;
     transform: translateY(400%) translateX(20%);
+    cursor: pointer;
 }
 .edit-avatar:hover .change-avatar-button {
     display: block;

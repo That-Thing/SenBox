@@ -34,9 +34,9 @@ html
                                 div(class="form-check form-switch")
                                     label(class="form-check-label" for="registrations") Enable registrations
                                     if config.settings['registrations']=='on'
-                                        input(class="form-check-input" type="checkbox" id="registrations" name="registrations" checked)
+                                        input(class="form-check-input" type="checkbox" id="registrations" name="registrations" value="on" checked)
                                     else
-                                        input(class="form-check-input" type="checkbox" id="registrations" name="registrations")
+                                        input(class="form-check-input" type="checkbox" id="registrations" name="registrations" value="on")
                             span(class="d-flex")
                                 div(class="form-check form-switch")
                                     label(class="form-check-label" for="invites") Require invites
@@ -47,13 +47,13 @@ html
                             h4 Upload Settings 
                             span(class="d-flex") 
                                 p(class="mt-auto mb-auto") Max banner size (mb)
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="banner-size" value=config.upload['banner-size']) 
+                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="bannerSize" value=config.upload['banner-size']) 
                             span(class="d-flex") 
                                 p(class="mt-auto mb-auto") Max avatar size (mb)
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="avatar-size" value=config.upload['avatar-size']) 
+                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="avatarSize" value=config.upload['avatar-size']) 
                             span(class="d-flex")
                                 p(class="mt-auto mb-auto") Max file size (mb)
-                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="max-file-size" value=config.upload['max-file-size'])
+                                input(class="form-control form-control-sm mt-1 ms-1 w-25" type="number" name="maxFileSize" value=config.upload['max-file-size'])
                             div(class="control-group" id="banned-mimes")
                                 input(type="hidden" name="mime-count" id="mime-count" value=config.upload['banned-mimes'].length)
                                 label(class="control-label" for="field1") Banned Mimetypes

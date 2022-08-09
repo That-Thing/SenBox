@@ -372,8 +372,8 @@ app.get("/invites", function(req, res) {
 app.get("/admin", function(req, res) {
   if (req.session.loggedin == true) {
     if(req.session.group < 2) { //Check if user is admin or higher
-      var revision = require('child_process') .execSync('git rev-parse HEAD') .toString().trim();
-      var branch = require('child_process') .execSync('git rev-parse --abbrev-ref HEAD') .toString().trim();
+      var revision = require('child_process').execSync('git rev-parse HEAD').toString().trim();
+      var branch = require('child_process').execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
       res.status(200).render('admin', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, revision: revision, branch: branch,path: "admin"});
     } else {
       res.status(406).json(errors['noPermission']);
@@ -650,6 +650,40 @@ app.post('/invites/generate', body("maxUses").optional({checkFalsy: true}).isNum
         res.status(406).json({"err": errors['noInvites']});
       }
     }) 
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
+app.post('/admin/update', 
+body('name').not().isEmpty().trim().escape(), 
+body('description').not().isEmpty().trim().escape(), 
+body('description').not().isEmpty().trim().escape(), 
+body('registrations').optional({checkFalsy: true}).escape(),
+body('invites').optional({checkFalsy: true}).escape(),
+body('bannerSize').not().isEmpty().isNumeric().default(config['upload']['banner-size']),
+body('avatarSize').not().isEmpty().isNumeric().default(config['upload']['avatar-size']),
+body('maxFileSize').not().isEmpty().isNumeric().default(config['upload']['max-file-size']),
+function(req, res) {
+  if (req.session.loggedin == true) { //Check if user is logged in
+    if(req.session.group > 2) {
+      res.status(406).json({"err": errors['noPermission']});
+      return;
+    }
+    let name = req.body.name;
+    let description = req.body.description;
+    let registrations = req.body.registrations;
+    let invites = req.body.invites;
+    let bannerSize = req.body.bannerSize;
+    let avatarSize = req.body.avatarSize;
+    let maxFileSize = req.body.maxFileSize;
+    if(!registrations) {
+      registrations = "off";
+    }
+    if(!invites) {
+      invites = "off";
+    }
+    console.log(req.body);
   } else {
     req.session.toast = ["#6272a4","You are not signed in"];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
