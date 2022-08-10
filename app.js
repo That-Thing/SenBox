@@ -445,7 +445,7 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().e
       return res.status(400).json({ errors: errors.array() });
     }
     if (RegExp('^[a-zA-Z0-9_.-]*$').test(user) == true && req.session.username == user) {
-      connection.query(`UPDATE accounts SET bio='${bio}', twitter='${twitter}', website=${website == "" ? null:"'"+website+"'"}, location='${location}'`, (err, rows) => {
+      connection.query(`UPDATE accounts SET bio='${bio}', twitter='${twitter}', website=${website == "" ? null:"'"+website+"'"}, location='${location}' WHERE username='${user}'`, (err, rows) => {
         if (err) throw err;
         res.status(200).redirect("/user/"+user);
       })
