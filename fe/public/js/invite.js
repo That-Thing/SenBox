@@ -20,8 +20,10 @@ window.onload = function() {
         });
     })
     $("#generated-invite").click(function() {
-        navigator.clipboard.writeText(`${window.location['origin']}/register?invite=${$("#generated-invite").text().split(" ")[1]}`);
-        $.toast({text: "URL copied to clipboard", loader: false, bgColor:"#6272a4"})
+        if($("#generated-invite").text()) {
+            navigator.clipboard.writeText(`${window.location['origin']}/register?invite=${$("#generated-invite").text().split(" ")[1]}`);
+            $.toast({text: "URL copied to clipboard", loader: false, bgColor:"#6272a4"})
+        }
     })
     $('.invite').click(function() {
         navigator.clipboard.writeText(`${window.location['origin']}/register?invite=${this.id}`);

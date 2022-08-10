@@ -14,30 +14,30 @@ html
                         h5(class=bg + "card-header") Controls
                         div(class="card-body")
                             form(action="/gallery" method="GET")
-                                input(class="form-control" type="text" placeholder="Filename or display name" name="filter")
+                                input(class="form-control" type="text" placeholder="Paste title" name="filter")
                                 button(class="btn btn-primary btn-block mt-2") 
                                     i(class="fas fa-search") 
                                     span(class="ms-1") Search
                             label(for="order-by" class="mt-1 mb-1") Order by
                             select(class="form-control" id="order-by")
                                 if sort == "new-old"
-                                    option(value="new-old" selected) Upload date (new-old)
+                                    option(value="new-old" selected) Creation date (new-old)
                                 else
-                                    option(value="new-old") Upload date (new-old)
+                                    option(value="new-old") Creation date (new-old)
                                 if sort == "old-new"
-                                    option(value="old-new" selected) Upload date (old-new)
+                                    option(value="old-new" selected) Creation date (old-new)
                                 else
-                                    option(value="old-new") Upload date (old-new)
+                                    option(value="old-new") Creation date (old-new)
                                 if sort == "title"
-                                    option(value="title" selected) Name (A-Z)
+                                    option(value="title" selected) Title (A-Z)
                                 else
-                                    option(value="title") Name (A-Z)
+                                    option(value="title") Title (A-Z)
                                 if sort == "title-desc"
-                                    option(value="title-desc" selected) Name (Z-A)
+                                    option(value="title-desc" selected) Title (Z-A)
                                 else
-                                    option(value="title-desc") Name (Z-A)
+                                    option(value="title-desc") Title (Z-A)
                             div(class="mt-2")
-                                p(class="mb-1") Files per page
+                                p(class="mb-1") Pastes per page
                                 span
                                     a(class="btn btn-primary p-1 me-2" href=currentPath+"?limit=15") 15
                                     a(class="btn btn-primary p-1 me-2" href=currentPath+"?limit=30") 30
