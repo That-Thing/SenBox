@@ -61,15 +61,15 @@ html
                     div(class=bg + "card mt-5 mx-auto table-responsive upload-table w-100")
                         h5(class=bg + "card-header") Gallery
                         div(class="card-body")
-                        for file in files.slice(0, limit)
-                            if file.mime.split('/')[0] == 'image'
-                                img(class="gallery-image m-3" src="files/"+file.name height="150")
-                            else
-                                span(class="card uploaded-file m-3 p-2 d-inline-block")
-                                    span
-                                        i(class="fas fa-file-alt")
-                                    span(class="file-url" url="files/"+file.name)
-                                        | files/#{file.name}
-                                    span(class="ms-2")
-                                        |#{file.filename}
+                            for file in files.slice(0, limit)
+                                if file.mime.split('/')[0] == 'image'
+                                    img(class="gallery-image m-3" src="files/"+file.name height="150")
+                                else
+                                    span(class="card uploaded-file m-3 p-2 d-inline-block")
+                                        span
+                                            i(class="fas fa-file-alt")
+                                        span(class="file-url" url="files/"+file.name)
+                                            | files/#{file.name}
+                                        span(class="ms-2")
+                                            |#{file.filename}
         include include/footer.pug
