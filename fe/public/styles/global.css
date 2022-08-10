@@ -38,11 +38,17 @@ a:hover {
     padding: 0;
     padding-right: 10px;
 }
-
+.nav-tabs .nav-link.active {
+    color: var(--text-color);
+    border-color: rgba(0,0,0,.125);
+}
+.nav-tabs .nav-link:hover {
+    border-color: rgba(0,0,0,.125);
+}
 footer {
     border-top: 1px solid rgba(0,0,0,.125)
 }
-nav {
+nav, .nav-tabs {
     border-bottom: 1px solid rgba(0,0,0,.125);
 }
 

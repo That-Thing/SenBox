@@ -4,7 +4,7 @@ html
         include include/head.pug
         link(href="styles/home.css" rel="stylesheet" type="text/css")
         script(src="/js/gallery.js")
-        title Gallery
+        title Pastes
     body(class=theme)
         include include/nav.pug
         div(class="container")
@@ -61,21 +61,26 @@ html
                     div(class=bg + "card mt-5 mx-auto table-responsive upload-table w-100")
                         ul(class="nav nav-tabs")
                             li(class="nav-item")
-                                a(class=bg + "nav-link active border-top-0 border-start-0 border-bottom-0" aria-current="page" href="#")
+                                a(class="nav-link border-top-0 border-start-0 border-bottom-0"  href="/gallery")
                                     h5 Gallery
                             li(class="nav-item")
-                                a(class="nav-link border-top-0 border-start-0 border-bottom-0" href="/gallery/pastes")
+                                a(class=bg + "nav-link active border-top-0 border-bottom-0" aria-current="page" href="#")
                                     h5 Pastes
                         div(class="card-body")
-                            for file in files.slice(0, limit)
-                                if file.mime.split('/')[0] == 'image'
-                                    img(class="gallery-image m-3" src="files/"+file.name height="150")
-                                else
-                                    span(class="card uploaded-file m-3 p-2 d-inline-block")
-                                        span
-                                            i(class="fas fa-file-alt")
-                                        span(class="file-url" url="files/"+file.name)
-                                            | files/#{file.name}
-                                        span(class="ms-2")
-                                            |#{file.filename}
+                            for paste in pastes.slice(0, limit)
+                                span(class="card uploaded-file m-3 p-2 d-inline-block")
+                                    span
+                                        i(class="fa-solid fa-align-left")
+                                    span(class="ms-2")
+                                        |#{paste.title}
+                                    hr(class="mt-1 mb-1")
+                                    if !paste.password
+                                        p(class="mb-0") #{paste.content.substring(0, 20)}...
+                                    else
+                                        p(class="text-danger mb-0")
+                                            i(class="fas fa-lock")
+                                            span(class="ms-1") Password protected
+                                    span(class="file-url" url="pastes/"+paste.id)
+                                        | pastes/#{paste.id}
+
         include include/footer.pug

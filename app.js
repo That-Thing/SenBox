@@ -223,6 +223,41 @@ app.get('/gallery', function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
+//Paste gallery page
+app.get('/gallery/pastes', function(req, res) {
+  if (req.session.loggedin == true) {
+    let queryUrl = url.parse(req.url, true).query;
+    let pastes = []; //Initiate files array
+    let limit = 15; //Default limit
+    let sort = "new-old"; //Default sort
+    let name = queryUrl.filter; //Initiate name
+    if (queryUrl.limit) { //Get display limit
+      limit = queryUrl.limit;
+    }
+    let queries = {
+      "new-old": `SELECT * FROM pastes WHERE owner=${req.session.uid} ORDER BY date DESC`,
+      "old-new": `SELECT * FROM pastes WHERE owner=${req.session.uid} ORDER BY date ASC`,
+      "title-desc": `SELECT * FROM pastes WHERE owner=${req.session.uid} ORDER BY title DESC`,
+      "title": `SELECT * FROM pastes WHERE owner=${req.session.uid} ORDER BY title ASC`,
+      "filter": `SELECT * FROM pastes WHERE owner=${req.session.uid} AND (title LIKE '%${name}%')  ORDER BY name ASC`
+    };
+    let query = queries[sort]; //Initiate query
+    if (queryUrl.sort) { //Sort by date or title
+      query = queries[sort];
+    }
+    if (queryUrl.filter) { //Name filter
+      query = queries["filter"];
+    }
+    connection.query(query, (err, rows) => {
+      if (err) throw err;
+      pastes = rows;
+      res.status(200).render('pastes', {config: reloadConfig(), pastes: pastes.slice(0, limit), sort, session:req.session, appTheme: req.cookies.theme, path: "gallery", currentPath: req.path})
+    })
+  } else {
+    req.session.toast = ["#6272a4","You are not signed in"];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
 
 //Paste page
 app.get('/pastes/:id', function(req, res) {
