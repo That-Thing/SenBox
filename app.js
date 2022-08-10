@@ -472,7 +472,7 @@ app.post("/banner/upload", (req, res) => {
           return res.status(500).send(errors['fileWriteError']);
         }
       });
-      connection.query(`UPDATE accounts SET banner='/${config['upload']['banner-path']}/${req.session.uid}.png' WHERE id='${req.session.id}'`, function(err, rows) {
+      connection.query(`UPDATE accounts SET banner='/${config['upload']['banner-path']}/${req.session.uid}.png' WHERE id='${req.session.uid}'`, function(err, rows) {
         if (err) throw err;
         res.status(200);
       });
@@ -498,7 +498,7 @@ app.post("/user/avatar", (req, res) => {
           return res.status(500).send(errors['fileWriteError']);
         }
       });
-      connection.query(`UPDATE accounts SET avatar='/${config['upload']['avatar-path']}/${req.session.uid}.png' WHERE id='${req.session.id}'`, function(err, rows) {
+      connection.query(`UPDATE accounts SET avatar='/${config['upload']['avatar-path']}/${req.session.uid}.png' WHERE id='${req.session.uid}'`, function(err, rows) {
         if (err) throw err;
         res.status(200);
       });
