@@ -192,6 +192,9 @@ app.get('/gallery', function(req, res) {
     let files = []; //Initiate files array
     let limit = 15; //Default limit
     let sort = "new-old"; //Default sort
+    if(queryUrl.sort) {
+      sort = queryUrl.sort;
+    }
     let name = queryUrl.filter; //Initiate name
     if (queryUrl.limit) { //Get display limit
       limit = queryUrl.limit;
@@ -227,9 +230,12 @@ app.get('/gallery', function(req, res) {
 app.get('/gallery/pastes', function(req, res) {
   if (req.session.loggedin == true) {
     let queryUrl = url.parse(req.url, true).query;
-    let pastes = []; //Initiate files array
+    let pastes = []; //Initiate pastes array
     let limit = 15; //Default limit
     let sort = "new-old"; //Default sort
+    if(queryUrl.sort) {
+      sort = queryUrl.sort;
+    }
     let name = queryUrl.filter; //Initiate name
     if (queryUrl.limit) { //Get display limit
       limit = queryUrl.limit;

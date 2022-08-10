@@ -28,26 +28,14 @@ html
                                     option(value="old-new" selected) Upload date (old-new)
                                 else
                                     option(value="old-new") Upload date (old-new)
-                                if sort == "name"
-                                    option(value="name" selected) Name (A-Z)
+                                if sort == "title"
+                                    option(value="title" selected) Name (A-Z)
                                 else
-                                    option(value="name") Name (A-Z)
-                                if sort == "name-desc"
-                                    option(value="name-desc" selected) Name (Z-A)
+                                    option(value="title") Name (A-Z)
+                                if sort == "title-desc"
+                                    option(value="title-desc" selected) Name (Z-A)
                                 else
-                                    option(value="name-desc") Name (Z-A)
-                                if sort == "type"
-                                    option(value="type" selected) File type
-                                else
-                                    option(value="type") File type
-                                if sort == "size"
-                                    option(value="size" selected) Size (small-large)
-                                else
-                                    option(value="size") Size (small-large)
-                                if sort == "size-desc"
-                                    option(value="size-desc" selected) Size (large-small)
-                                else
-                                    option(value="size-desc") Size (large-small)
+                                    option(value="title-desc") Name (Z-A)
                             div(class="mt-2")
                                 p(class="mb-1") Files per page
                                 span
@@ -72,10 +60,10 @@ html
                                     span
                                         i(class="fa-solid fa-align-left")
                                     span(class="ms-2")
-                                        |#{paste.title}
+                                        |#{paste.title.substring(0, 20)}#{(paste.title.length > 20) ? "..." : ""}
                                     hr(class="mt-1 mb-1")
                                     if !paste.password
-                                        p(class="mb-0") #{paste.content.substring(0, 20)}...
+                                        p(class="mb-0") #{paste.content.substring(0, 20)}#{(paste.content.length > 20) ? "..." : ""}
                                     else
                                         p(class="text-danger mb-0")
                                             i(class="fas fa-lock")
