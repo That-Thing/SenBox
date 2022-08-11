@@ -20,6 +20,7 @@ const os = require('os');
 const md5File = require('md5-file');
 const url = require('url');
 const decode = require('unescape');
+const fetch = require('node-fetch');
 var cookies = require("cookie-parser");
 var sizeOf = require('image-size');
 const { body, validationResult } = require('express-validator');
@@ -163,7 +164,7 @@ app.get('/home', function(req, res) {
       })
     })
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 });
@@ -172,7 +173,7 @@ app.get('/upload', function(req, res) {
   if (req.session.loggedin == true) {
     res.status(200).render('upload', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, path: "upload"})
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
@@ -181,7 +182,7 @@ app.get('/paste', function(req, res) {
   if (req.session.loggedin == true) {
     res.status(200).render('paste', {config: reloadConfig(), session:req.session, appTheme : req.cookies.theme, path: "paste"})
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
@@ -222,7 +223,7 @@ app.get('/gallery', function(req, res) {
       res.status(200).render('gallery', {config: reloadConfig(), files: files.slice(0, limit), sort, session:req.session, appTheme: req.cookies.theme, path: "gallery", currentPath: req.path})
     })
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
@@ -260,7 +261,7 @@ app.get('/gallery/pastes', function(req, res) {
       res.status(200).render('pastes', {config: reloadConfig(), pastes: pastes.slice(0, limit), sort, session:req.session, appTheme: req.cookies.theme, path: "gallery", currentPath: req.path})
     })
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
@@ -357,7 +358,7 @@ app.get('/user/:user', function(req, res) {
       res.status(406).json(errors['invalidUsername']);
     }
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
@@ -390,7 +391,7 @@ app.get('/user/:user/edit', function(req, res) {
       res.status(406).json(errors['invalidUsername']);
     }
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
@@ -406,10 +407,61 @@ app.get("/invites", function(req, res) {
       })
     })
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
-}) 
+})
+app.get("/settings/auth", async function(req, res) {
+  if (req.session.loggedin == true) {
+    let code = url.parse(req.url, true).query.code; //Get the code from the query string
+    if(code) { //If there is a code
+      var body = { //Create the body for the request
+        'client_id': config.discord.discord_client_id,
+        'client_secret': config.discord.discord_client_secret,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': 'http://localhost:3000/settings/auth',
+      }
+      var auth = await fetch("https://discord.com/api/v10/oauth2/token", { //Request to authorize using the code given
+          method: 'POST',
+          body: new URLSearchParams(Object.entries(body)).toString(),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      }).catch(err => {
+        console.log(err);
+      });
+      var authResponse = await auth.json();
+      if(authResponse.access_token) { //If the request was successful
+        var user = await fetch("https://discord.com/api/v10/users/@me", { //Request to get the user's information
+          method: 'GET',
+          headers: {'Authorization': `Bearer ${authResponse['access_token']}`}
+        });
+        var user = await user.json(); //User's information
+        if(user.id) {
+          res.status(200).json(user);
+        } else {
+          res.status(400).json(user);
+        }
+      } else { //If the request was unsuccessful
+        res.status(400).json(authResponse);
+      }
+    }
+  } else {
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
+app.get("/settings", function(req, res) {
+  if (req.session.loggedin == true) {
+
+    connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, (err, rows) => {
+      var user = rows[0];
+      res.status(200).render('settings', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user: user, path: "settings"});
+    })
+  } else {
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
+  }
+})
 app.get("/admin", function(req, res) {
   if (req.session.loggedin == true) {
     if(req.session.group < 2) { //Check if user is admin or higher
@@ -423,7 +475,7 @@ app.get("/admin", function(req, res) {
       res.status(406).json(errors['noPermission']);
     }
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
@@ -455,13 +507,13 @@ app.post('/user/:user/update', body('bio').optional({checkFalsy: true}).trim().e
       res.status(406).json(errors['invalidUsername']);
     }
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
 app.post("/banner/upload", (req, res) => {
   if (req.session.loggedin == false) { //Check if user is logged in
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
   if (req.body.payload) { //Check if file is present
@@ -487,7 +539,7 @@ app.post("/banner/upload", (req, res) => {
 })
 app.post("/user/avatar", (req, res) => {
   if (req.session.loggedin == false) { //Check if user is logged in
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
   if (req.body.payload) { //Check if file is present
@@ -601,7 +653,7 @@ app.post('/auth', body('username').not().isEmpty().trim().escape(), function(req
 //Upload file
 app.post('/upload', upload.any('uploads'), function(req, res) {
   if (req.session.loggedin == false) { //Check if user is logged in
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
   if (!req.files) { //Check if files are present
@@ -657,8 +709,8 @@ app.post('/paste', body("content").escape(), body("title").optional({checkFalsy:
       res.status(200).json({"url":"/pastes/"+id});
     });
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
-    res.status(200).json({"error":"You are not signed in"});
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
+    res.status(200).json({"error":errors['notLoggedIn']});
   }
 })
 app.post('/invites/generate', body("maxUses").optional({checkFalsy: true}).isNumeric().default(1), function(req, res) {
@@ -696,7 +748,7 @@ app.post('/invites/generate', body("maxUses").optional({checkFalsy: true}).isNum
       }
     }) 
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
@@ -745,7 +797,7 @@ function(req, res) {
       res.status(200).json({"success":true});
     });
   } else {
-    req.session.toast = ["#6272a4","You are not signed in"];
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
