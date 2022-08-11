@@ -13,6 +13,28 @@ Clone the project and install dependencies
   cd SenBox
   npm install
 ```
+## Database
+Install MySQL
+```bash
+sudo apt install mysql-server
+sudo systemctl start mysql.service
+```
+Create the database  
+Import the .sql file into that database
+```bash
+mysql -u username -p database_name < database.sql
+```
+## Discord Oauth2
+Head to https://discord.com/developers/applications  
+Create a new application, go to the Oauth2 section, add a redirect for `http(s)://your.domain/settings/auth`.  
+Copy the client ID and the client secret *(you will need these for the config)*
+##
+Edit the config to your liking.  
+*Make sure to change the salt, enter the database connection information, and set the Discord Oauth2 secret and ID*
+```bash
+nano config.json
+```
+
 Create Nginx reverse proxy
 
 ```bash
@@ -59,4 +81,4 @@ sudo systemctl enable senbox
 sudo systemctl start senbox
 ```
 
-It is suggested that you run this through CloudFlare
+It is suggested that you run SenBox through CloudFlare
