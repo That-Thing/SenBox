@@ -416,7 +416,8 @@ app.get("/admin", function(req, res) {
       var revision = require('child_process').execSync('git rev-parse HEAD').toString().trim();
       var branch = require('child_process').execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
       var commit = require('child_process').execSync('git rev-list --all --count').toString().trim();
-      var behind = require('child_process').execSync('git rev-list --left-right --count @{u}...HEAD');
+      require('child_process').execSync('git fetch');
+      var behind = parseInt(require('child_process').execSync('git rev-list --count HEAD..@{u}'));
       res.status(200).render('admin', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, revision: revision, branch: branch, commit: commit, behind: behind, path: "admin"});
     } else {
       res.status(406).json(errors['noPermission']);
