@@ -22,6 +22,9 @@ html
                             span(class="d-flex")
                                 i(class="fa-solid fa-code-commit mt-auto mb-auto")
                                 a(class="ms-1 mt-auto mb-auto" href="https://github.com/That-Thing/SenBox/commits/"+branch target="_blank") #{commit}
+                            if behind > 0
+                                span(class="d-flex")
+                                    span(class="text-muted font-italic") You are #{behind} commit(s) behind the master branch.
                 div(class="col-lg-6 mb-4 w-75")
                     div(class=bg + "card mt-5 mx-auto w-100 p-2")
                         h5(class=bg + "card-header") Site Settings
