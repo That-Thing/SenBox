@@ -22,10 +22,12 @@ html
                             span(class="d-flex")
                                 p(class="mb-0 mt-0") UID:
                                 p(class="mb-0 mt-0 ms-1 text-muted") #{user.id}
-                            h5(class=bg + "card-header") Links                            
-                            span(class="d-flex")
-                                i(class="fa-brands fa-discord mt-auto mb-auto")
-                                p(class="ms-1 mt-auto mb-auto") discordUsername#1234
+                            h5(class=bg + "card-header") Links 
+                            if user.discord_id                       
+                                span(class="d-flex")
+                                    i(class="fa-brands fa-discord mt-auto mb-auto")
+                                    span(class="ms-1 mt-auto mb-auto") #{user.discord_username.split("#")[0]}
+                                    span(class="mt-auto mb-auto text-muted") ##{user.discord_username.split("#")[1]}
                             if user.location
                                 span(class="d-flex")
                                     i(class="fa-solid fa-location-dot mt-auto mb-auto")

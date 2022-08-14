@@ -19,7 +19,8 @@
     "name": "SenBox",
     "description": "A simple, free, and exclusive file hosting solution.",
     "registrations": "on",
-    "invites": "on"
+    "invites": "on",
+    "discord-login": "on"
   },
   "upload": {
     "path": "files",

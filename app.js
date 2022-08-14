@@ -413,37 +413,47 @@ app.get("/invites", function(req, res) {
 })
 app.get("/settings/auth", async function(req, res) {
   if (req.session.loggedin == true) {
-    let code = url.parse(req.url, true).query.code; //Get the code from the query string
-    if(code) { //If there is a code
-      var body = { //Create the body for the request
-        'client_id': config.discord.discord_client_id,
-        'client_secret': config.discord.discord_client_secret,
-        'grant_type': 'authorization_code',
-        'code': code,
-        'redirect_uri': 'http://localhost:3000/settings/auth',
-      }
-      var auth = await fetch("https://discord.com/api/v10/oauth2/token", { //Request to authorize using the code given
-          method: 'POST',
-          body: new URLSearchParams(Object.entries(body)).toString(),
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      }).catch(err => {
-        console.log(err);
-      });
-      var authResponse = await auth.json();
-      if(authResponse.access_token) { //If the request was successful
-        var user = await fetch("https://discord.com/api/v10/users/@me", { //Request to get the user's information
-          method: 'GET',
-          headers: {'Authorization': `Bearer ${authResponse['access_token']}`}
-        });
-        var user = await user.json(); //User's information
-        if(user.id) {
-          res.status(200).json(user);
-        } else {
-          res.status(400).json(user);
+    if(config.settings['discord-login'] == 'on') {
+      let code = url.parse(req.url, true).query.code; //Get the code from the query string
+      if(code) { //If there is a code
+        var body = { //Create the body for the request
+          'client_id': config.discord.discord_client_id,
+          'client_secret': config.discord.discord_client_secret,
+          'grant_type': 'authorization_code',
+          'code': code,
+          'redirect_uri': 'http://localhost:3000/settings/auth',
         }
-      } else { //If the request was unsuccessful
-        res.status(400).json(authResponse);
+        var auth = await fetch("https://discord.com/api/v10/oauth2/token", { //Request to authorize using the code given
+            method: 'POST',
+            body: new URLSearchParams(Object.entries(body)).toString(),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        }).catch(err => {
+          console.log(err);
+        });
+        var authResponse = await auth.json();
+        if(authResponse.access_token) { //If the request was successful
+          var user = await fetch("https://discord.com/api/v10/users/@me", { //Request to get the user's information
+            method: 'GET',
+            headers: {'Authorization': `Bearer ${authResponse['access_token']}`}
+          });
+          var user = await user.json(); //User's information
+          if(user.id) {
+            //res.status(200).json(user);
+            connection.query(`UPDATE accounts SET discord_id='${user.id}', discord_avatar='${user.avatar}', discord_username='${user.username}#${user.discriminator}' WHERE id=${req.session.uid}`, (err, rows) => {
+              if(err) {
+                console.log(err);
+              }
+              res.status(200).send("<script>window.close();</script > ");
+            })
+          } else {
+            res.status(400).json(user);
+          }
+        } else { //If the request was unsuccessful
+          res.status(400).json(authResponse);
+        }
       }
+    } else {
+      res.status(400).json(errors['signInMethodDisabled']);
     }
   } else {
     req.session.toast = ["#6272a4",errors['notLoggedIn']];
@@ -757,6 +767,7 @@ body('name').not().isEmpty().trim().escape(),
 body('description').not().isEmpty().trim().escape(), 
 body('registrations').optional({checkFalsy: true}).escape(),
 body('invites').optional({checkFalsy: true}).escape(),
+body('discordLogin').optional({checkFalsy: true}).escape(),
 body('bannerSize').not().isEmpty().isNumeric().default(config['upload']['banner-size']),
 body('avatarSize').not().isEmpty().isNumeric().default(config['upload']['avatar-size']),
 body('maxFileSize').not().isEmpty().isNumeric().default(config['upload']['max-file-size']),
@@ -771,6 +782,7 @@ function(req, res) {
     let description = req.body.description;
     let registrations = req.body.registrations;
     let invites = req.body.invites;
+    let discordLogin = req.body.discord-login;
     let bannerSize = req.body.bannerSize;
     let avatarSize = req.body.avatarSize;
     let maxFileSize = req.body.maxFileSize;
@@ -784,10 +796,14 @@ function(req, res) {
     if(!invites) {
       invites = "off";
     }
+    if(!discordLogin) {
+      discordLogin = "off";
+    }
     config['settings']['name'] = name;
     config['settings']['description'] = description;
     config['settings']['registrations'] = registrations;
     config['settings']['invites'] = invites;
+    config['settings']['discord-login'] = discordLogin;
     config['upload']['banner-size'] = bannerSize;
     config['upload']['avatar-size'] = avatarSize;
     config['upload']['max-file-size'] = maxFileSize;

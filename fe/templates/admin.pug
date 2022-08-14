@@ -52,6 +52,14 @@ html
                                     input(class="form-check-input" type="checkbox" id="invites" name="invites" checked)
                                 else
                                     input(class="form-check-input" type="checkbox" id="invites" name="invites")
+                        h4 Log in
+                        span(class="d-flex")
+                            div(class="form-check form-switch")
+                                label(class="form-check-label" for="discordLogin") Enable log in with Discord
+                                if config.settings['discord-login']=='on'
+                                    input(class="form-check-input" type="checkbox" id="discordLogin" name="discordLogin" checked)
+                                else
+                                    input(class="form-check-input" type="checkbox" id="discordLogin" name="discordLogin")
                         h4 Upload Settings 
                         span(class="d-flex") 
                             p(class="mt-auto mb-auto") Max banner size (mb)

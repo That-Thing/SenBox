@@ -13,5 +13,6 @@
     "fileWriteError": "Could not write file to disk",
     "noPermission": "Invalid permissions",
     "noInvites": "No invites available",
-    "notLoggedIn": "You are not signed in"
+    "notLoggedIn": "You are not signed in",
+    "signInMethodDisabled": "Sign in method is disabled"
 }
