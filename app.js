@@ -421,7 +421,7 @@ app.get("/settings/auth", async function(req, res) {
           'client_secret': config.discord.discord_client_secret,
           'grant_type': 'authorization_code',
           'code': code,
-          'redirect_uri': 'http://localhost:3000/settings/auth',
+          'redirect_uri': config.discord.discord_redirect_uri,
         }
         var auth = await fetch("https://discord.com/api/v10/oauth2/token", { //Request to authorize using the code given
             method: 'POST',
@@ -460,12 +460,29 @@ app.get("/settings/auth", async function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
+app.post("/settings/auth/revoke", function(req, res) {
+  if (req.session.loggedin == true) {
+    if(config.settings['discord-login'] == 'on') {
+      connection.query(`UPDATE accounts SET discord_id=NULL, discord_avatar=NULL, discord_username=NULL WHERE id=${req.session.uid}`, (err, rows) => {
+        if(err) {
+          console.log(err);
+        }
+        res.status(200).send("Discord Unlinked");
+      })
+    } else {
+      res.status(400).json(errors['signInMethodDisabled']);
+    }
+  } else {
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
 app.get("/settings", function(req, res) {
   if (req.session.loggedin == true) {
-
     connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, (err, rows) => {
       var user = rows[0];
-      res.status(200).render('settings', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user: user, path: "settings"});
+      let redirect = new URLSearchParams(config.discord.discord_redirect_uri).toString().slice(0, -1);
+      res.status(200).render('settings', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, redirect: redirect, user: user, path: "settings"});
     })
   } else {
     req.session.toast = ["#6272a4",errors['notLoggedIn']];

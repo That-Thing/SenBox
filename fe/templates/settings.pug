@@ -3,13 +3,14 @@ html
     head
         include include/head.pug
         link(href="/styles/home.css" rel="stylesheet" type="text/css")
+        script(src="/js/settings.js")
         title Settings
     body(class=theme)
         include include/nav.pug
         div(class="container")
             div(class="row")   
                 if user.discord_id
-                    div(class="col-lg-6 mb-4 w-25")
+                    div(class="col-lg-6 mb-4 w-25" id="discord")
                         div(class=bg + "card mt-5 mx-auto w-75")
                             h5(class=bg + "card-header") Discord
                             div(class="card-body p-2")
@@ -25,14 +26,20 @@ html
                         span(class="d-flex")
                             input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="Current password" name="current-password" id='current-password')
                         span(class="d-flex")
-                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="New password" name="new-password" id='repeat-password')
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="New password" name="new-password" id='new-password')
                         span(class="d-flex")
                             input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="Repeat password" name="repeat-password" id='repeat-password')
                         button(class="btn btn-sm btn-primary ms-1 w-25 mt-2" id="change-password") Change password
                         h5(class="mt-2") Discord
-                        a(class="btn btn-sm btn-primary ms-1 w-25 mt-2" href="https://discord.com/api/oauth2/authorize?client_id=1002561492203343933&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fsettings%2Fauth&response_type=code&scope=identify" target="_blank")
-                            i(class="fa-brands fa-discord me-2")
-                            | Discord Oauth2
+                        if user.discord_id
+                            input(type='hidden' name='discord-link' id="discord-link" value="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify")
+                            button(class="btn btn-sm btn-danger ms-1 w-25 mt-2" id="unlink-discord")
+                                i(class="fa-brands fa-discord me-2")
+                                | Unlink Discord 
+                        else
+                            a(class="btn btn-sm btn-primary ms-1 w-25 mt-2" href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" target="_blank" id="link-discord")
+                                i(class="fa-brands fa-discord me-2")
+                                | Link Discord
                         h4(class="mt-2") User settings
                         span(class="d-flex") 
                             p(class="mt-auto mb-auto") E-mail
