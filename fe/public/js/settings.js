@@ -10,4 +10,15 @@ $(document).ready(function(){
             $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
         });
     });
+    $("#change-password").on("click", function(){
+        $.post('/settings/password', {
+            oldPassword: $("#current-password").val(),
+            repeatPassword: $("#repeat-password").val(),
+            newPassword: $("#new-password").val()
+        }, function(result) {
+            $.toast({text: "Password updated", loader: false, bgColor:"#6272a4"})
+        }).fail(function(err) {
+            $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
+        });
+    });
 });

@@ -14,5 +14,8 @@
     "noPermission": "Invalid permissions",
     "noInvites": "No invites available",
     "notLoggedIn": "You are not signed in",
-    "signInMethodDisabled": "Sign in method is disabled"
+    "signInMethodDisabled": "Sign in method is disabled",
+    "incorrectPassword": "Incorrect password",
+    "samePassword": "New password cannot be the same as the old one",
+    "passwordsDontMatch": "Passwords do not match"
 }

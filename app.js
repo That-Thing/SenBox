@@ -489,6 +489,39 @@ app.get("/settings", function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});    
   }
 })
+app.post("/settings/password", function(req, res) {
+  if (req.session.loggedin == true) {
+    if(req.body.oldPassword && req.body.repeatPassword && req.body.newPassword) {
+      if(req.body.newPassword == req.body.repeatPassword) { //Check if the new password is the same as the repeat password
+        connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, (err, rows) => {
+          var user = rows[0];
+          oldPassword = crypto.createHash('sha256').update(req.body.oldPassword+config['server']['salt']).digest('base64'); //Hash the old password
+          newPassword = crypto.createHash('sha256').update(req.body.newPassword+config['server']['salt']).digest('base64'); //Hash the new password
+          if(user.password == oldPassword) { //Check if old password is correct
+            if(user.password != newPassword) { //Check if the new password is the same as the old password
+              connection.query(`UPDATE accounts SET password='${newPassword}' WHERE id=${req.session.uid}`, (err, rows) => {
+                if(err) {
+                  console.log(err);
+                }
+                res.status(200).send("Password Changed");
+              })
+            } else {
+              res.status(400).send(errors['samePassword']);
+            }
+          } else {
+            res.status(400).send(errors['incorrectPassword']);
+          }
+        })
+      } else {
+        res.status(400).send(errors['passwordsDontMatch']);
+      }
+    } else {
+      res.status(400).send(errors['missingFields']);
+    }
+  } else {
+    res.status(200).send(errors['notLoggedIn']);
+  }
+})
 app.get("/admin", function(req, res) {
   if (req.session.loggedin == true) {
     if(req.session.group < 2) { //Check if user is admin or higher
