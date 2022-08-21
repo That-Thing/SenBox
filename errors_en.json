@@ -17,5 +17,6 @@
     "signInMethodDisabled": "Sign in method is disabled",
     "incorrectPassword": "Incorrect password",
     "samePassword": "New password cannot be the same as the old one",
-    "passwordsDontMatch": "Passwords do not match"
+    "passwordsDontMatch": "Passwords do not match",
+    "discordInvalid": "Discord account does not exist"
 }

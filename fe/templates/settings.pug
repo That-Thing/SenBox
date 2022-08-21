@@ -37,6 +37,7 @@ html
                                 i(class="fa-brands fa-discord me-2")
                                 | Unlink Discord 
                         else
+                            - let redirect = new URLSearchParams(config.discord.discord_redirect_uri).toString().slice(0, -1);
                             a(class="btn btn-sm btn-primary ms-1 w-25 mt-2" href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" target="_blank" id="link-discord")
                                 i(class="fa-brands fa-discord me-2")
                                 | Link Discord

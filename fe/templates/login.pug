@@ -1,6 +1,7 @@
 doctype html 
 html
-    head 
+    head
+        include include/head.pug
         meta(name="title" content="Log in")
         meta(name="description" content="Log in to your account")
         meta(name="keywords" content="paste, filehost, " + config['settings']['name'])
@@ -11,10 +12,8 @@ html
         meta(property="og:image" content="/images/logo.png")
         meta(property="og:site_name" content=config['settings']['name'])
         meta(charset="utf-8")
-        meta(name="viewport", content="width=device-width", initial-scale="1")
-        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3", crossorigin="anonymous")
-        script(src="https://kit.fontawesome.com/8030caa762.js" crossorigin="anonymous")
         link(href="/styles/auth.css" rel="stylesheet" type="text/css")
+        script(src="/js/auth.js")
         link(rel="icon", href="/images/favicon.ico")
         title #{config['settings']['name']} - Sign in
         unless session.toast == false
@@ -25,21 +24,20 @@ html
     body(class=theme)
         div(class="container")
             div(class="mx-auto rounded p-3 login-form bg-dark")
-                form(action="/auth" method="POST")
-                    h1(class="mb-3") Sign in
-                    div(class="form-floating auth-input")
-                        input(class="form-control" id="username" name="username" placeholder="Username or email" maxlength="50" pattern='^[a-zA-Z0-9@_.-]*$' required)
-                        label(for="username") Username or email
-                    div(class="form-floating mt-1 auth-input")
-                        input(type="password" class="form-control" id="password" name="password" placeholder="Password" required)
-                        label(for="password") Password
-                    div(class="checkbox mt-1 mb-3")
-                        label
-                            input(type="checkbox" value="rememeber" name="remember" id="remember")
-                            .  
-                                Remember me
-                        
-                button(class="w-100 btn btn-lg btn-primary auth-button mt-3" type="submit") Sign in
+                h1(class="mb-3") Sign in
+                div(class="form-floating auth-input")
+                    input(class="form-control" id="username" name="username" placeholder="Username or email" maxlength="50" pattern='^[a-zA-Z0-9@_.-]*$' required)
+                    label(for="username") Username or email
+                div(class="form-floating mt-1 auth-input")
+                    input(type="password" class="form-control" id="password" name="password" placeholder="Password" required)
+                    label(for="password") Password
+                div(class="checkbox mt-1 mb-3")
+                    label
+                        input(type="checkbox" value="rememeber" name="remember" id="remember")
+                        .  
+                            Remember me
+                button(class="w-100 btn btn-lg btn-primary auth-button mt-3" id="log-in-button") Sign in
+                - let redirect = new URLSearchParams(config.discord.discord_login_redirect_uri).toString().slice(0, -1);
                 a(href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" class="w-50 btn btn-sm btn-secondary auth-button mt-3 p-1 border-0" id="discord-login")
                     i(class="fa-brands fa-discord me-2")
                     span(class="") Sign in with Discord
