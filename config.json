@@ -8,7 +8,8 @@
   "discord": {
     "discord_client_id": "",
     "discord_client_secret": "",
-    "discord_redirect_uri": "http://localhost:3000/settings/auth"
+    "discord_redirect_uri": "http://localhost:3000/settings/auth",
+    "discord_login_redirect_uri": "http://localhost:3000/auth/discord"
   },
   "database": {
     "host": "localhost",

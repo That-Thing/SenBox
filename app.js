@@ -133,7 +133,8 @@ app.get('/login', function(req, res) {
     req.session.toast = ["#6272a4","You are already signed in"];
     res.status(200).redirect('home');
   } else {
-    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+    let redirect = new URLSearchParams(config.discord.discord_login_redirect_uri).toString().slice(0, -1);
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, redirect: redirect, appTheme : req.cookies.theme});
   }
 });
 //log out

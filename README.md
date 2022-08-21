@@ -26,7 +26,7 @@ mysql -u username -p database_name < database.sql
 ```
 ## Discord Oauth2
 Head to https://discord.com/developers/applications  
-Create a new application, go to the Oauth2 section, add a redirect for `http(s)://your.domain/settings/auth`.  
+Create a new application, go to the Oauth2 section, add a redirect for `http(s)://your.domain/settings/auth` and `http(s)://your.domain/auth/login`.  
 Copy the client ID, the client secret, and the redirect *(you will need these for the config)*
 ##
 Edit the config to your liking.  
