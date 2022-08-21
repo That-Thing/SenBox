@@ -37,10 +37,11 @@ html
                         .  
                             Remember me
                 button(class="w-100 btn btn-lg btn-primary auth-button mt-3" id="log-in-button") Sign in
-                - let redirect = new URLSearchParams(config.discord.discord_login_redirect_uri).toString().slice(0, -1);
-                a(href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" class="w-50 btn btn-sm btn-secondary auth-button mt-3 p-1 border-0" id="discord-login")
-                    i(class="fa-brands fa-discord me-2")
-                    span(class="") Sign in with Discord
+                if config.settings['discord-login'] == 'on'
+                    - let redirect = new URLSearchParams(config.discord.discord_login_redirect_uri).toString().slice(0, -1);
+                    a(href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" class="w-50 btn btn-sm btn-secondary auth-button mt-3 p-1 border-0" id="discord-login")
+                        i(class="fa-brands fa-discord me-2")
+                        span(class="") Sign in with Discord
         p(class="mt-2") Don't have an account? 
             a(href="/register") Sign up
         unless session.toast == false

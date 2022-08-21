@@ -30,17 +30,18 @@ html
                         span(class="d-flex")
                             input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="Repeat password" name="repeat-password" id='repeat-password')
                         button(class="btn btn-sm btn-primary ms-1 w-25 mt-2" id="change-password") Change password
-                        h5(class="mt-2") Discord
-                        if user.discord_id
-                            input(type='hidden' name='discord-link' id="discord-link" value="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify")
-                            button(class="btn btn-sm btn-danger ms-1 w-25 mt-2" id="unlink-discord")
-                                i(class="fa-brands fa-discord me-2")
-                                | Unlink Discord 
-                        else
-                            - let redirect = new URLSearchParams(config.discord.discord_redirect_uri).toString().slice(0, -1);
-                            a(class="btn btn-sm btn-primary ms-1 w-25 mt-2" href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" target="_blank" id="link-discord")
-                                i(class="fa-brands fa-discord me-2")
-                                | Link Discord
+                        if config.settings['discord-login'] == 'on'
+                            h5(class="mt-2") Discord
+                            if user.discord_id
+                                input(type='hidden' name='discord-link' id="discord-link" value="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify")
+                                button(class="btn btn-sm btn-danger ms-1 w-25 mt-2" id="unlink-discord")
+                                    i(class="fa-brands fa-discord me-2")
+                                    | Unlink Discord 
+                            else
+                                - let redirect = new URLSearchParams(config.discord.discord_redirect_uri).toString().slice(0, -1);
+                                a(class="btn btn-sm btn-primary ms-1 w-25 mt-2" href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" target="_blank" id="link-discord")
+                                    i(class="fa-brands fa-discord me-2")
+                                    | Link Discord
                         h4(class="mt-2") User settings
                         span(class="d-flex") 
                             p(class="mt-auto mb-auto") E-mail
