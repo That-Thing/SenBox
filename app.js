@@ -709,54 +709,58 @@ app.post('/auth', body('username').not().isEmpty().trim().escape(), function(req
     }
 });
 app.get('/auth/discord', async function(req, res) {
-  let code = url.parse(req.url, true).query.code; //Get the code from the query string
-  if(code) { //If there is a code
-    var body = { //Create the body for the request
-      'client_id': config.discord.discord_client_id,
-      'client_secret': config.discord.discord_client_secret,
-      'grant_type': 'authorization_code',
-      'code': code,
-      'redirect_uri': config.discord.discord_login_redirect_uri,
-    }
-    var auth = await fetch("https://discord.com/api/v10/oauth2/token", { //Request to authorize using the code given
-        method: 'POST',
-        body: new URLSearchParams(Object.entries(body)).toString(),
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    }).catch(err => {
-      console.log(err);
-    });
-    var authResponse = await auth.json();
-    if(authResponse.access_token) { //If the request was successful
-      var user = await fetch("https://discord.com/api/v10/users/@me", { //Request to get the user's information
-        method: 'GET',
-        headers: {'Authorization': `Bearer ${authResponse['access_token']}`}
-      });
-      var user = await user.json(); //User's information
-      if(user.id) {
-        //res.status(200).json(user);
-        connection.query(`SELECT * FROM accounts WHERE discord_id=${user.id}`, (err, rows) => {
-          if(err) {
-            console.log(err);
-          }
-          if(rows.length > 0) {
-            req.session.loggedin = true;
-            req.session.username = rows[0].username;
-            req.session.group = rows[0].group;
-            req.session.uid = rows[0].id;
-            req.session.toast = ["#6272a4","Successfully signed in"];
-            res.status(200).redirect('/home');
-          } else {
-            res.status(200).json(errors['discordInvalid']);
-          }
-        })
-      } else {
-        res.status(400).json(user);
+  if(config.settings['discord-login'] == 'on') {
+    let code = url.parse(req.url, true).query.code; //Get the code from the query string
+    if(code) { //If there is a code
+      var body = { //Create the body for the request
+        'client_id': config.discord.discord_client_id,
+        'client_secret': config.discord.discord_client_secret,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': config.discord.discord_login_redirect_uri,
       }
-    } else { //If the request was unsuccessful
-      res.status(400).json(authResponse);
+      var auth = await fetch("https://discord.com/api/v10/oauth2/token", { //Request to authorize using the code given
+          method: 'POST',
+          body: new URLSearchParams(Object.entries(body)).toString(),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      }).catch(err => {
+        console.log(err);
+      });
+      var authResponse = await auth.json();
+      if(authResponse.access_token) { //If the request was successful
+        var user = await fetch("https://discord.com/api/v10/users/@me", { //Request to get the user's information
+          method: 'GET',
+          headers: {'Authorization': `Bearer ${authResponse['access_token']}`}
+        });
+        var user = await user.json(); //User's information
+        if(user.id) {
+          //res.status(200).json(user);
+          connection.query(`SELECT * FROM accounts WHERE discord_id=${user.id}`, (err, rows) => {
+            if(err) {
+              console.log(err);
+            }
+            if(rows.length > 0) {
+              req.session.loggedin = true;
+              req.session.username = rows[0].username;
+              req.session.group = rows[0].group;
+              req.session.uid = rows[0].id;
+              req.session.toast = ["#6272a4","Successfully signed in"];
+              res.status(200).redirect('/home');
+            } else {
+              res.status(200).json(errors['discordInvalid']);
+            }
+          })
+        } else {
+          res.status(400).json(user);
+        }
+      } else { //If the request was unsuccessful
+        res.status(400).json(authResponse);
+      }
+    } else { //If there is no code
+      res.status(400).json({'error': 'No code'});
     }
-  } else { //If there is no code
-    res.status(400).json({'error': 'No code'});
+  } else {
+    res.status(400).json(errors['signInMethodDisabled']);
   }
 });
 //Upload file
