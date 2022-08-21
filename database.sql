@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `discord_avatar` tinytext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `discord_username` tinytext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
