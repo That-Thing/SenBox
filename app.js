@@ -81,7 +81,7 @@ function setSession (req, res, next) {
     req.session.group = 999; //Set group to 999 by default
   }
   if (!req.cookies.theme) {
-    res.cookie('theme', "dark");
+    req.cookies.theme = "dark"; //Set theme to dark by default
   }
   req.session.toast = false; //Set toast to false by default
   next()
@@ -696,6 +696,9 @@ app.post('/auth', body('username').not().isEmpty().trim().escape(), function(req
           req.session.group = rows[0].group;
           req.session.uid = rows[0].id;
           req.session.toast = ["#6272a4","Successfully signed in"];
+          if(req.body.remember) {
+            req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
+          }
           res.status(200).redirect('home');
         } else {
           return res.status(406).send(errors['invalidLogin']);
