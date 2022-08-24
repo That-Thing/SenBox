@@ -21,4 +21,12 @@ $(document).ready(function(){
             $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
         });
     });
+    $("#regenerate-api-key").on("click", function(){
+        $.post('/settings/api/regenerate', function(result) {
+            $("#api-key").val(result.api_key);
+            $.toast({text: "API key regenerated", loader: false, bgColor:"#6272a4"})
+        }).fail(function(err) {
+            $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
+        });
+    });
 });

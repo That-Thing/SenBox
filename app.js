@@ -477,6 +477,20 @@ app.post("/settings/auth/revoke", function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
+app.post("/settings/api/regenerate", function(req, res) {
+  if (req.session.loggedin == true) {
+    let newKey = crypto.randomBytes(32).toString('hex').substring(0,20);
+    connection.query(`UPDATE accounts SET api_key='${newKey}' WHERE id=${req.session.uid}`, (err, rows) => {
+      if(err) {
+        console.log(err);
+      }
+      res.status(200).json({"api_key": newKey});
+    })
+  } else {
+    req.session.toast = ["#6272a4",errors['notLoggedIn']];
+    res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
+  }
+})
 app.get("/settings", function(req, res) {
   if (req.session.loggedin == true) {
     connection.query(`SELECT * FROM accounts WHERE id=${req.session.uid}`, (err, rows) => {
@@ -787,7 +801,36 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   return res.status(200).json(returnFiles);
 
 });
-
+app.post("/api/upload", (req, res) => {
+  console.log(req.body.api_key);
+  console.log(req.body);
+  if(req.body.api_key) {
+    console.log(req.body.api_key);
+    connection.query(`SELECT * FROM accounts WHERE api_key='${req.body.api_key}'`, (err, rows) => {
+      if (err) throw err;
+      if (rows.length > 0) {
+        if (req.files) {
+          let files = req.files;
+          returnFiles = new Array();
+          files.forEach(file => {
+            let hash = md5File.sync(file.path); //Get MD5 hash of file
+            connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}')`, function(err, rows) {
+              if (err) throw err;
+            });
+            returnFiles.push({"filename":file.originalname, path:`/files/${file.filename}`});
+          });
+          return res.status(200).json(returnFiles);
+        } else {
+          return res.status(400).json(errors['missingFiles']);
+        }
+      } else {
+        return res.status(400).json(errors['invalidAPIKey']);
+      }
+    })
+  } else {
+    return res.status(400).send(errors['invalidAPIKey']);
+  }
+})
 app.post('/paste', body("content").escape(), body("title").optional({checkFalsy: true}).trim().escape(), body("syntax").optional({checkFalsy: true}).trim().escape(), body("password").optional({checkFalsy: true}).trim().escape(),function(req, res) {
   if (req.session.loggedin == true) { //Check if user is logged in
     let title = req.body.title;

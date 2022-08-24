@@ -170,3 +170,7 @@ nav, .nav-tabs {
 .uploaded-file:hover > .file-url {
     display: block;
 }
+.hidden:not(:focus) {
+    -webkit-filter: blur(3px);
+    filter: blur(3px);
+}

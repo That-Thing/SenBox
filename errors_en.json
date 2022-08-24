@@ -18,5 +18,6 @@
     "incorrectPassword": "Incorrect password",
     "samePassword": "New password cannot be the same as the old one",
     "passwordsDontMatch": "Passwords do not match",
-    "discordInvalid": "Discord account does not exist"
+    "discordInvalid": "Discord account does not exist",
+    "invalidAPIKey": "Invalid API key"
 }

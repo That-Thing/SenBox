@@ -46,5 +46,11 @@ html
                         span(class="d-flex") 
                             p(class="mt-auto mb-auto") E-mail
                             input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="email@example.com" name="email" id='email' value=user.email)
+                        h4(class="mt-2") API Key 
+                        span(class="d-flex") 
+                            p(class="mt-auto mb-auto") API Key
+                            input(class="form-control form-control-sm mt-1 ms-1 w-25 hidden" type="text" placeholder="API Key" name="api-key" id='api-key' value=user.api_key readonly)
+                            button(class="btn btn-sm btn-primary ms-1 mt-2" id="regenerate-api-key") 
+                                i(class="fa-solid fa-repeat")
                         button(class="btn btn-sm btn-primary mt-3 ms-auto me-auto w-50" id="save-settings") Save
         include include/footer.pug
