@@ -60,12 +60,12 @@ const upload = multer({
   fileFilter: function(req, file, cb) { 
     if(config['upload']['banned-mimes'].includes(file.mimetype)) { //Mimetype validation
       cb(null, false);
-      return cb(new Error('File type not allowed'));
+      return cb(true, {"error": errors['bannedFileType']});
     }
     cb(null, true)
     if(file.size > config['upload']['max-file-size']) { //File size validation
       cb(null, false);
-      return cb(new Error('File too large'));
+      return cb(true, {"error": errors['fileTooLarge']});
     }
   }
 });
@@ -924,7 +924,7 @@ function(req, res) {
     let description = req.body.description;
     let registrations = req.body.registrations;
     let invites = req.body.invites;
-    let discordLogin = req.body.discord-login;
+    let discordLogin = req.body.discordLogin;
     let bannerSize = req.body.bannerSize;
     let avatarSize = req.body.avatarSize;
     let maxFileSize = req.body.maxFileSize;

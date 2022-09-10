@@ -22,7 +22,7 @@
     "description": "A simple, free, and exclusive file hosting solution.",
     "registrations": "on",
     "invites": "on",
-    "discord-login": "on"
+    "discord-login": "off"
   },
   "upload": {
     "path": "files",
@@ -34,7 +34,8 @@
     "banned-mimes": [
       "application/zip",
       "application/x-zip-compressed",
-      "application/exe"
+      "application/exe",
+      "application/x-msdownload"
     ]
   },
   "groups": {

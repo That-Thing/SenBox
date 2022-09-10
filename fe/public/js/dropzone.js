@@ -11,7 +11,10 @@ window.onload = function() {
     });
     myDropzone.on("success", function(file, responseText) {
         console.log(responseText);
-    })
+    });
+    myDropzone.on("error", function(file, responseText) {
+        console.log(responseText);
+    });
 };
 
 $(".mbox").each(function() {

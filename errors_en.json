@@ -19,5 +19,7 @@
     "samePassword": "New password cannot be the same as the old one",
     "passwordsDontMatch": "Passwords do not match",
     "discordInvalid": "Discord account does not exist",
-    "invalidAPIKey": "Invalid API key"
+    "invalidAPIKey": "Invalid API key",
+    "bannedFileType": "File type is not allowed",
+    "fileTooLarge": "File is too large"
 }
