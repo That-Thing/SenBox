@@ -659,6 +659,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
         password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password+salt
         let token = crypto.createHash('sha256').update(username+password+config['server']['salt']).digest('base64'); //User Token
         var ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim(); //Get IP Address
+        let api_key = crypto.randomBytes(32).toString('hex').substring(0,20); //Generate API Key
         if (config['settings']['invites'] == 'on') { //Check if invites are enabled
           let invite = req.body.invite;
           connection.query(`SELECT * FROM invites WHERE invite = '${invite}'`, (err, rows) => {
@@ -672,7 +673,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
               connection.query(`UPDATE invites SET uses = uses + 1 WHERE invite = '${invite}'`, (err, rows) => {
                 if (err) throw err
               })
-              connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${ip}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL)`, (err, rows) => {
+              connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, '${invite}', ${invBy}, ${Date.now()}, "${ip}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL, NULL, NULL, NULL, '${api_key}')`, (err, rows) => {
                 if (err) throw err
               })
               req.session.toast = ["#6272a4","Account created"];
@@ -680,7 +681,7 @@ app.post('/register', body('email').isEmail().normalizeEmail(), body('username')
             }
           })
         } else { //An invite is not required. 
-          connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, NULL, NULL, ${Date.now()}, "${ip}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL)`, (err, rows) => {
+          connection.query(`INSERT INTO accounts VALUES (NULL, '${username}', '${email}', '${password}', '${token}', ${config['groups']['3']['id']}, NULL, NULL, ${Date.now()}, "${ip}", NULL, '/images/default.png', NULL, NULL, NULL, NULL, ${config['groups']['3']['invites']}, 0, NULL, NULL, NULL, NULL, '${api_key}')`, (err, rows) => {
             if (err) throw err
           })
           req.session.toast = ["#6272a4","Account created"];
