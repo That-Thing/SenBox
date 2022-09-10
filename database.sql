@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Server version:               10.4.11-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
--- HeidiSQL Version:             12.0.0.6468
+-- HeidiSQL Version:             12.1.0.6537
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -43,8 +43,9 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `discord_id` tinytext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `discord_avatar` tinytext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `discord_username` tinytext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `api_key` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -57,7 +58,8 @@ CREATE TABLE IF NOT EXISTS `files` (
   `date` bigint(20) NOT NULL DEFAULT 0,
   `hash` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `size` bigint(20) NOT NULL,
-  `mime` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'File mimetype'
+  `mime` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'File mimetype',
+  `delete_key` text COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.

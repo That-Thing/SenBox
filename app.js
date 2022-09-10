@@ -30,7 +30,6 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
-app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'static')));
 app.set('view engine', 'pug') //Use pug for templates. 
 app.set('views', './fe/templates'); //Set template directory
@@ -793,7 +792,8 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   returnFiles = new Array();
   files.forEach(file => {
     let hash = md5File.sync(file.path); //Get MD5 hash of file
-    connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${req.session.uid}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}')`, function(err, rows) {
+    let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
+    connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${req.session.uid}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}', '${delete_key}')`, function(err, rows) {
       if (err) throw err;
     });
     returnFiles.push({"filename":file.originalname, path:`/files/${file.filename}`});
@@ -801,25 +801,18 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   return res.status(200).json(returnFiles);
 
 });
-app.post("/api/upload", (req, res) => {
-  console.log(req.body.api_key);
-  console.log(req.body);
+app.post("/api/upload", upload.any('uploads'), (req, res) => {
   if(req.body.api_key) {
-    console.log(req.body.api_key);
     connection.query(`SELECT * FROM accounts WHERE api_key='${req.body.api_key}'`, (err, rows) => {
       if (err) throw err;
       if (rows.length > 0) {
         if (req.files) {
-          let files = req.files;
-          returnFiles = new Array();
-          files.forEach(file => {
-            let hash = md5File.sync(file.path); //Get MD5 hash of file
-            connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}')`, function(err, rows) {
-              if (err) throw err;
-            });
-            returnFiles.push({"filename":file.originalname, path:`/files/${file.filename}`});
+          let hash = md5File.sync(req.files[0].path); //Get MD5 hash of file
+          let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
+          connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${req.files[0].originalname}', '${req.files[0].filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${req.files[0].size}, '${req.files[0].mimetype}', '${delete_key}')`, function(err, rows) {
+            if (err) throw err;
+            return res.status(200).json({"filename": req.files[0].originalname, "url": `${req.headers.host}/files/${req.files[0].filename}`, "delete_key": delete_key, "delete_url": `${req.headers.host}/delete/${delete_key}`});
           });
-          return res.status(200).json(returnFiles);
         } else {
           return res.status(400).json(errors['missingFiles']);
         }
