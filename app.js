@@ -959,6 +959,29 @@ function(req, res) {
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
 })
+app.get("/api/config/sharex", function(req, res) {
+  res.status(200).json(
+    {
+      "Version": "14.1.0",
+      "Name": "SenBox File Upload",
+      "DestinationType": "ImageUploader, FileUploader",
+      "RequestMethod": "POST",
+      "RequestURL": req.headers.host+"/api/upload",
+      "Body": "MultipartFormData",
+      "Arguments": {
+        "api_key": req.query.api_key
+      },
+      "FileFormName": "file",
+      "URL": "{json:url}",
+      "DeletionURL": "{json:delete_url}",
+      "ErrorMessage": "{json:error}"
+    }
+  );
+});
+
+
+
+
 
 app.listen(config['server']['port'], () => {
   console.log(`App started on port ${config['server']['port']}`)

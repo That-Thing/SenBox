@@ -10,7 +10,7 @@ html
         div(class="container")
             div(class="row")   
                 if user.discord_id
-                    div(class="col-lg-6 mb-4 w-25" id="discord")
+                    div(class="col-lg-6 mb-4 w-50" id="discord")
                         div(class=bg + "card mt-5 mx-auto w-75")
                             h5(class=bg + "card-header") Discord
                             div(class="card-body p-2")
@@ -22,35 +22,43 @@ html
                 div(class="col-lg-6 mb-4 w-75")
                     div(class=bg + "card mt-5 mx-auto w-100 p-2")
                         h5(class=bg + "card-header") Settings
-                        h4 Authentication
-                        span(class="d-flex")
-                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="Current password" name="current-password" id='current-password')
-                        span(class="d-flex")
-                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="New password" name="new-password" id='new-password')
-                        span(class="d-flex")
-                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="password" placeholder="Repeat password" name="repeat-password" id='repeat-password')
-                        button(class="btn btn-sm btn-primary ms-1 w-25 mt-2" id="change-password") Change password
-                        if config.settings['discord-login'] == 'on'
-                            h5(class="mt-2") Discord
-                            if user.discord_id
-                                input(type='hidden' name='discord-link' id="discord-link" value="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify")
-                                button(class="btn btn-sm btn-danger ms-1 w-25 mt-2" id="unlink-discord")
-                                    i(class="fa-brands fa-discord me-2")
-                                    | Unlink Discord 
-                            else
-                                - let redirect = new URLSearchParams(config.discord.discord_redirect_uri).toString().slice(0, -1);
-                                a(class="btn btn-sm btn-primary ms-1 w-25 mt-2" href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" target="_blank" id="link-discord")
-                                    i(class="fa-brands fa-discord me-2")
-                                    | Link Discord
-                        h4(class="mt-2") User settings
-                        span(class="d-flex") 
-                            p(class="mt-auto mb-auto") E-mail
-                            input(class="form-control form-control-sm mt-1 ms-1 w-25" type="text" placeholder="email@example.com" name="email" id='email' value=user.email)
-                        h4(class="mt-2") API Key 
-                        span(class="d-flex") 
-                            p(class="mt-auto mb-auto") API Key
-                            input(class="form-control form-control-sm mt-1 ms-1 w-25 hidden" type="text" placeholder="API Key" name="api-key" id='api-key' value=user.api_key readonly)
-                            button(class="btn btn-sm btn-primary ms-1 mt-2" id="regenerate-api-key") 
-                                i(class="fa-solid fa-repeat")
-                        button(class="btn btn-sm btn-primary mt-3 ms-auto me-auto w-50" id="save-settings") Save
+                        div(class="row")
+                            div(class="col-lg")
+                                h4 Authentication
+                                span(class="d-flex")
+                                    input(class="form-control form-control-sm mt-1 ms-1 w-50" type="password" placeholder="Current password" name="current-password" id='current-password')
+                                span(class="d-flex")
+                                    input(class="form-control form-control-sm mt-1 ms-1 w-50" type="password" placeholder="New password" name="new-password" id='new-password')
+                                span(class="d-flex")
+                                    input(class="form-control form-control-sm mt-1 ms-1 w-50" type="password" placeholder="Repeat password" name="repeat-password" id='repeat-password')
+                                button(class="btn btn-sm btn-primary ms-1 w-50 mt-2" id="change-password") Change password
+                                if config.settings['discord-login'] == 'on'
+                                    h5(class="mt-2") Discord
+                                    if user.discord_id
+                                        input(type='hidden' name='discord-link' id="discord-link" value="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify")
+                                        button(class="btn btn-sm btn-danger ms-1 w-50 mt-2" id="unlink-discord")
+                                            i(class="fa-brands fa-discord me-2")
+                                            | Unlink Discord 
+                                    else
+                                        - let redirect = new URLSearchParams(config.discord.discord_redirect_uri).toString().slice(0, -1);
+                                        a(class="btn btn-sm btn-primary ms-1 w-50 mt-2" href="https://discord.com/api/oauth2/authorize?client_id="+config.discord.discord_client_id+"&redirect_uri="+redirect+"&response_type=code&scope=identify" target="_blank" id="link-discord")
+                                            i(class="fa-brands fa-discord me-2")
+                                            | Link Discord
+                                h4(class="mt-2") User settings
+                                span(class="d-flex") 
+                                    p(class="mt-auto mb-auto") E-mail
+                                    input(class="form-control form-control-sm mt-1 ms-1 w-50" type="text" placeholder="email@example.com" name="email" id='email' value=user.email)
+                                h4(class="mt-2") API Key 
+                                span(class="d-flex") 
+                                    p(class="mt-auto mb-auto") API Key
+                                    input(class="form-control form-control-sm mt-1 ms-1 w-50 hidden" type="text" placeholder="API Key" name="api-key" id='api-key' value=user.api_key readonly)
+                                    button(class="btn btn-sm btn-primary ms-1 mt-2" id="regenerate-api-key") 
+                                        i(class="fa-solid fa-repeat")
+                                button(class="btn btn-sm btn-primary mt-3 ms-auto me-auto w-50" id="save-settings") Save
+                            div(class="col-lg")
+                                h4 Configs 
+                                span(class="d-flex")
+                                    p(class="mt-auto mb-auto") Copy ShareX config
+                                    button(class="btn btn-sm btn-primary ms-1 mt-2" id="sharex-config") 
+                                        i(class="fa-regular fa-copy")
         include include/footer.pug

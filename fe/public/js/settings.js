@@ -29,4 +29,14 @@ $(document).ready(function(){
             $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
         });
     });
+    $("#sharex-config").on("click", function(){
+        $.get('/api/config/sharex?api_key='+$("#api-key").val(), function(result) {
+            let sharex = JSON.stringify(result);
+            navigator.clipboard.writeText(sharex).then(function() {
+                $.toast({text: "ShareX config copied", loader: false, bgColor:"#6272a4"})
+            });
+        }).fail(function(err) {
+            $.toast({text: err.responseText, loader: false, bgColor:"#6272a4"}) 
+        });
+    });
 });
