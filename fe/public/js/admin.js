@@ -24,6 +24,11 @@ $(document).ready(function(){
         } else {
             var invites = 'off';
         }
+        if($('#discordLogin').is(':checked')) {
+            var discordLogin = 'on';
+        } else {
+            var discordLogin = 'off';
+        }
         var bannerSize = $('#bannerSize').val();
         var avatarSize = $('#avatarSize').val();
         var maxFileSize = $('#maxFileSize').val();
@@ -41,7 +46,8 @@ $(document).ready(function(){
             "bannerSize": bannerSize,
             "avatarSize": avatarSize,
             "maxFileSize": maxFileSize,
-            "bannedMimes": bannedMimes
+            "bannedMimes": bannedMimes,
+            "discordLogin": discordLogin
             }, function(result) {
                 if (result.success == true) {
                     $.toast({text: "Settings updated", loader: false, bgColor:"#6272a4"}) 
