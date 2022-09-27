@@ -148,7 +148,7 @@ app.get('/', function(req, res) {
 app.get('/home', function(req, res) {
   if (req.session.loggedin == true) {
     let spaceUsed = 0;
-    let spaceTotal = convertBytes(config['groups'][req.session.group.toString()]['default-storage']);
+    let spaceTotal = convertBytes(config['groups'][(req.session.group-1).toString()]['default-storage']);
     let files = [];
     connection.query(`SELECT * FROM files WHERE owner=${req.session.uid} ORDER BY date DESC`, (err, rows) => {
       if (err) throw err;
@@ -802,29 +802,6 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   return res.status(200).json(returnFiles);
 
 });
-app.post("/api/upload", upload.any('uploads'), (req, res) => {
-  if(req.body.api_key) {
-    connection.query(`SELECT * FROM accounts WHERE api_key='${req.body.api_key}'`, (err, rows) => {
-      if (err) throw err;
-      if (rows.length > 0) {
-        if (req.files) {
-          let hash = md5File.sync(req.files[0].path); //Get MD5 hash of file
-          let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
-          connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${req.files[0].originalname}', '${req.files[0].filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${req.files[0].size}, '${req.files[0].mimetype}', '${delete_key}')`, function(err, rows) {
-            if (err) throw err;
-            return res.status(200).json({"filename": req.files[0].originalname, "url": `${req.headers.host}/files/${req.files[0].filename}`, "delete_key": delete_key, "delete_url": `${req.headers.host}/delete/${delete_key}`});
-          });
-        } else {
-          return res.status(400).json(errors['missingFiles']);
-        }
-      } else {
-        return res.status(400).json(errors['invalidAPIKey']);
-      }
-    })
-  } else {
-    return res.status(400).send(errors['invalidAPIKey']);
-  }
-})
 app.post('/paste', body("content").escape(), body("title").optional({checkFalsy: true}).trim().escape(), body("syntax").optional({checkFalsy: true}).trim().escape(), body("password").optional({checkFalsy: true}).trim().escape(),function(req, res) {
   if (req.session.loggedin == true) { //Check if user is logged in
     let title = req.body.title;
@@ -959,7 +936,8 @@ function(req, res) {
     req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
-})
+});
+//Generate sharex config with given api key
 app.get("/api/config/sharex", function(req, res) {
   res.status(200).json(
     {
@@ -979,11 +957,49 @@ app.get("/api/config/sharex", function(req, res) {
     }
   );
 });
-
-
-
-
-
+//Upload file to server
+app.post("/api/upload", upload.any('uploads'), (req, res) => {
+  if(req.body.api_key) {
+    connection.query(`SELECT * FROM accounts WHERE api_key='${req.body.api_key}'`, (err, rows) => {
+      if (err) throw err;
+      if (rows.length > 0) {
+        if (req.files) {
+          let hash = md5File.sync(req.files[0].path); //Get MD5 hash of file
+          let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
+          connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${req.files[0].originalname}', '${req.files[0].filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${req.files[0].size}, '${req.files[0].mimetype}', '${delete_key}')`, function(err, rows) {
+            if (err) throw err;
+            return res.status(200).json({"filename": req.files[0].originalname, "url": `${req.headers.host}/files/${req.files[0].filename}`, "delete_key": delete_key, "delete_url": `${req.headers.host}/api/delete?key=${delete_key}`});
+          });
+        } else {
+          return res.status(400).json(errors['missingFiles']);
+        }
+      } else {
+        return res.status(400).json(errors['invalidAPIKey']);
+      }
+    })
+  } else {
+    return res.status(400).send(errors['invalidAPIKey']);
+  }
+})
+//Delete file from server using delete key
+app.post("/api/delete", function(req, res) {
+  if(req.query.key) {
+    connection.query(`SELECT * FROM files WHERE delete_key='${req.query.key}'`, function(err, rows){
+      if (err) throw err;
+      if (rows[0].delete_key == req.query.key) {
+        fs.unlinkSync(`./files/${rows[0].name}`);
+        connection.query(`DELETE FROM files WHERE delete_key='${req.query.key}'`, function(err, rows){
+          if (err) throw err;
+          res.status(200).json({"success":true});
+        });
+      } else {
+        res.status(406).json({"err": errors['invalidDeleteKey']});
+      }
+    });
+  } else {
+    res.status(406).json({"err": errors['invalidDeleteKey']});
+  }
+});
 app.listen(config['server']['port'], () => {
   console.log(`App started on port ${config['server']['port']}`)
 })

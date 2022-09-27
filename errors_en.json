@@ -21,5 +21,6 @@
     "discordInvalid": "Discord account does not exist",
     "invalidAPIKey": "Invalid API key",
     "bannedFileType": "File type is not allowed",
-    "fileTooLarge": "File is too large"
+    "fileTooLarge": "File is too large",
+    "invalidDeleteKey": "Invalid delete key"
 }
