@@ -786,7 +786,7 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
     req.session.toast = ["#6272a4",errors['notLoggedIn']];
     res.status(200).render('login', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
   }
-  if (!req.files) { //Check if files are present
+  if (req.files.length == 0) { //Check if files are present
     return res.status(400).send(errors['missingFiles']);
   }
   let files = req.files;
@@ -959,21 +959,68 @@ app.get("/api/config/sharex", function(req, res) {
   );
 });
 //Upload file to server
-app.post("/api/upload", upload.any('uploads'), (req, res) => {
+app.post("/api/upload", upload.any('uploads'), body("api_key").escape(), (req, res) => {
+  console.log(req.body.api_key);
   if(req.body.api_key) {
     connection.query(`SELECT * FROM accounts WHERE api_key='${req.body.api_key}'`, (err, rows) => {
       if (err) throw err;
       if (rows.length > 0) {
-        if (req.files) {
-          let hash = md5File.sync(req.files[0].path); //Get MD5 hash of file
+        if (req.files.length > 0) {
+          console.log(req.files);
+          let hash = md5File.sync(req.files[0].path); //Get MD5 hash of file  THIS CRASHES THE FUCKING CODE.
           let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
           connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${req.files[0].originalname}', '${req.files[0].filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${req.files[0].size}, '${req.files[0].mimetype}', '${delete_key}')`, function(err, rows) {
             if (err) throw err;
-            return res.status(200).json({"filename": req.files[0].originalname, "url": `${req.headers.host}/files/${req.files[0].filename}`, "delete_key": delete_key, "delete_url": `${req.headers.host}/api/delete?key=${delete_key}`});
+            return res.status(200).json({"filename": req.files[0].originalname, "url": `${req.protocol}://${req.headers.host}/files/${req.files[0].filename}`, "delete_key": delete_key, "delete_url": `${req.headers.host}/api/delete?key=${delete_key}`});
           });
         } else {
           return res.status(400).json(errors['missingFiles']);
         }
+      } else {
+        return res.status(400).json(errors['invalidAPIKey']);
+      }
+    })
+  } else {
+    return res.status(400).send(errors['invalidAPIKey']);
+  }
+});
+app.post('/api/paste', body("content").escape(), body("api_key").escape(), body("title").optional({checkFalsy: true}).trim().escape(), body("syntax").optional({checkFalsy: true}).trim().escape(), body("password").optional({checkFalsy: true}).trim().escape(), function(req, res) {
+  console.log(req.body.api_key);
+  if(req.body.api_key) {
+    connection.query(`SELECT * FROM accounts WHERE api_key='${req.body.api_key}'`, (err, rows) => { 
+      if (err) throw err;
+      if (rows.length > 0) {
+        let title = req.body.title;
+        let content = req.body.content;
+        let burn = 0;
+        if(req.body.burn == 'on') {
+          burn = 1;
+        }
+        let syntax = req.body.syntax;
+        let password = null;
+        if (req.body.password) {
+          password = crypto.createHash('sha256').update(password+config['server']['salt']).digest('base64'); //SHA256 hash of password
+        }
+        if(!title) {
+          title = "Untitled";
+        }
+        if(!content) {
+          res.status(406).json(errors['missingContent']);
+          return;
+        }
+        if(!burn) {
+          burn = 0;
+        }
+        if(!syntax) {
+          syntax = 'none'
+        }
+        let r = /[^A-Za-z0-9]/g;
+        let id = crypto.createHash('sha256').update(title+content+rows[0].id+Date.now()).digest('base64').substring(1,10).replace(r, ""); //Generate id based on title, content, user, and time
+        let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
+        connection.query(`INSERT INTO pastes VALUES ('${id}', ${rows[0].id}, '${title}', '${content}', ${burn == 1 ? 1 : 0}, ${!syntax ? null : "'"+syntax+"'"}, ${Date.now()}, ${password == null ? null : "'"+password+"'"}, "${delete_key}")`, function(err, rows) {
+          if (err) throw err;
+          res.status(200).json({"id":id, "url":`${req.protocol}://${req.headers.host}/pastes/${id}`, "delete_key": delete_key, "delete_url": `${req.protocol}://${req.headers.host}/api/paste/delete?${delete_key}`});
+        });
       } else {
         return res.status(400).json(errors['invalidAPIKey']);
       }

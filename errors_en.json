@@ -6,7 +6,7 @@
     "usernameExists": "Username taken",
     "emailExists": "Emai already exists",
     "invalidInvite": "Invite is invalid",
-    "missingFiles": "No files were uploaded",
+    "missingFiles": "No valid files were uploaded",
     "missingContent": "No content was submitted",
     "invalidUsername": "Invalid username",
     "invalidDimensions": "Invalid image dimensions",
