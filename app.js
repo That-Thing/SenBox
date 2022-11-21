@@ -334,25 +334,27 @@ app.get('/user/:user', function(req, res) {
     var user = req.params['user'];
     if (RegExp('^[a-zA-Z0-9_.-]*$').test(user) == true) {
       connection.query(`SELECT * FROM accounts WHERE username='${user}'`, (err, rows) => {
-        if(rows.length == 0) { //User doesn't exist in DB
-          res.sendStatus(404);
-        }
-        let account = rows[0];
-        var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
-        if(account.invitedBy != null) {
-          connection.query(`SELECT * FROM accounts WHERE id=${account.invitedBy}`, (err, rows) => {
-            let inviter;
-            if (rows.length > 0) {
-              inviter = rows[0].username;
-            } else {
-              inviter = null;
-            }
-            res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: inviter, date: date, path: "account"});
-          })
+        if(rows.length > 0) { //User doesn't exist in DB
+
+          let account = rows[0];
+          var date = new Date(rows[0].joinDate).toLocaleDateString("en-US");
+          if(account.invitedBy != null) {
+            connection.query(`SELECT * FROM accounts WHERE id=${account.invitedBy}`, (err, rows) => {
+              let inviter;
+              if (rows.length > 0) {
+                inviter = rows[0].username;
+              } else {
+                inviter = null;
+              }
+              res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: inviter, date: date, path: "account"});
+            })
+          } else {
+            res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: null, date: date, path: "account"});
+          }
         } else {
-          res.status(200).render('account', {config: reloadConfig(), session:req.session, appTheme: req.cookies.theme, user:account, invBy: null, date: date, path: "account"});
+          res.status(404).render('404', {config: reloadConfig(), session:req.session, appTheme  : req.cookies.theme});
         }
-      })
+      });
     } else {
       res.status(406).json(errors['invalidUsername']);
     }
@@ -985,7 +987,7 @@ app.post("/api/upload", upload.any('uploads'), body("api_key").escape(), (req, r
   }
 });
 app.post('/api/paste', body("content").escape(), body("api_key").escape(), body("title").optional({checkFalsy: true}).trim().escape(), body("syntax").optional({checkFalsy: true}).trim().escape(), body("password").optional({checkFalsy: true}).trim().escape(), function(req, res) {
-  console.log(req.body.api_key);
+  console.log(req.body);
   if(req.body.api_key) {
     connection.query(`SELECT * FROM accounts WHERE api_key='${req.body.api_key}'`, (err, rows) => { 
       if (err) throw err;
