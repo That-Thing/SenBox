@@ -796,7 +796,7 @@ app.post('/upload', upload.any('uploads'), function(req, res) {
   files.forEach(file => {
     let hash = md5File.sync(file.path); //Get MD5 hash of file
     let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
-    connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname}', '${file.filename}', ${req.session.uid}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}', '${delete_key}')`, function(err, rows) {
+    connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${file.originalname.substring(0,64)}', '${file.filename}', ${req.session.uid}, ${Date.now()}, '${hash}', ${file.size}, '${file.mimetype}', '${delete_key}')`, function(err, rows) {
       if (err) throw err;
     });
     returnFiles.push({"filename":file.originalname, path:`/files/${file.filename}`});
@@ -971,7 +971,7 @@ app.post("/api/upload", upload.any('uploads'), body("api_key").escape(), (req, r
           console.log(req.files);
           let hash = md5File.sync(req.files[0].path); //Get MD5 hash of file  THIS CRASHES THE FUCKING CODE.
           let delete_key = crypto.randomBytes(32).toString('hex').substring(0,40); //Generate a random delete key
-          connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${req.files[0].originalname}', '${req.files[0].filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${req.files[0].size}, '${req.files[0].mimetype}', '${delete_key}')`, function(err, rows) {
+          connection.query(`INSERT INTO files VALUES ('${hash.substring(0,8)}', '${req.files[0].originalname.substring(0,64)}', '${req.files[0].filename}', ${rows[0].id}, ${Date.now()}, '${hash}', ${req.files[0].size}, '${req.files[0].mimetype}', '${delete_key}')`, function(err, rows) {
             if (err) throw err;
             return res.status(200).json({"filename": req.files[0].originalname, "url": `${req.protocol}://${req.headers.host}/files/${req.files[0].filename}`, "delete_key": delete_key, "delete_url": `${req.headers.host}/api/delete?key=${delete_key}`});
           });
